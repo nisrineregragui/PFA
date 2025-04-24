@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Reservation System</title>
+    {% comment %} <link rel="stylesheet" href="css/client-style.css"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Book the Best,Forget the Rest!</h1>
+                <p>Where Every Event Find Its Perfect Place!</p>
+                <div class="search-box">
+                    <div class="search-row">
+                        <div class="search-group">
+                            <label><i class="fas fa-building"></i> Building</label>
+                            <select>
+                                <option>Any Building</option>
+                                <option>The Creative Loft</option>
+                                <option>Studio Music Factory</option>
+                                <option>The Artistic Center</option>
+                                <option>Motion Lab</option>
+                                <option>Flow Move Center</option>
+                            </select>
+                        </div>
+                        <div class="search-group">
+                            <label><i class="fas fa-calendar-alt"></i> Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="search-group">
+                            <label><i class="fas fa-clock"></i> Start Time</label>
+                            <input type="time">
+                        </div>
+                        <div class="search-group">
+                            <label><i class="fas fa-clock"></i> End Time</label>
+                            <input type="time">
+                        </div>
+                        <div class="search-group">
+                            <label><i class="fas fa-user"></i> Capacity</label>
+                            <select>
+                                <option>Any Capacity</option>
+                                <option>1-5 People</option>
+                                <option>6-10 People</option>
+                                <option>11-20 People</option>
+                                <option>21+ People</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary search-btn">
+                            <i class="fas fa-search"></i> Find Rooms
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Rooms -->
+    <section class="featured-rooms">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Rooms</h2>
+                <p>Explore our most popular meeting and conference spaces</p>
+            </div>
+            <div class="rooms-grid">
+                <div class="room-card">
+                    <div class="room-image">
+                       <img src="{% static 'CLIENT/images/photopro.jpg' %}" alt="Studio">
+
+                        <div class="room-price">150mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Photography</div>
+                        <h3>Studio Photo Pro</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 30 People</span>
+                            <span><i class="fas fa-tv"></i> White Background</span>
+                            <span><i class="fas fa-video"></i> 4K camera</span>
+                            <span><i class="fas fa-image"></i> Green Screen</span>
+                        </div>
+                        <p>A fully-equipped professional photography studio with a white backdrop, green screen for digital effects, softboxes, reflectors, and a 4K camera for high-quality shoots.</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                <div class="room-card">
+                    <div class="room-image">
+                         <img src="{% static 'CLIENT/images/coworking.jpg' %}" alt="coworking">
+                        <div class="room-price">300mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Shared WorkSpace</div>
+                        <h3>Creative Coworking Space
+                        </h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 60 People</span>
+                            <span><i class="fas fa-chalkboard"></i> Whiteboard</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p>A collaborative workspace for creators, offering shared desks equipped for editing, writing, sound and video production, and digital artwork creation in a creative, flexible environment.
+                        </p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                <div class="room-card">
+                    <div class="room-image">
+                         <img src="{% static 'CLIENT/images/podcast2.jpg' %}">
+                        <div class="room-price">400mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Audio Recording Studio
+                        </div>
+                        <h3>Podcast & Voice-over Studio
+                        </h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 5 People</span>
+                            <span><i class="fas fa-music"></i> Soundproof walls
+                            </span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p> A soundproofed space for podcast recording or voice-over work, with high-quality microphones and a mixing desk.
+                        </p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="view-all-container">
+                <a href="{% url 'rooms' %}" class="btn btn-primary">View All Rooms</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Room Types Section -->
+    <section class="room-types">
+        <div class="container">
+            <div class="section-header">
+                <h2>Room Types</h2>
+                <p>Find the perfect space for your needs</p>
+            </div>
+            <div class="room-types-grid">
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-camera-retro"></i>
+                    </div>
+                    <h3>Studio</h3>
+                    <p>Professional spaces equipped for photography sessions with lighting, backdrops, and gear.
+                    </p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-drum"></i>
+                    </div>
+                    <h3>Rehearsal Rooms</h3>
+                    <p>Soundproofed spaces for music practice, vocals, or small performances.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>Production Room</h3>
+                    <p>Digital audio/video workspaces with professional software and equipment.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>Workshops</h3>
+                    <p> Creative hands-on rooms for arts, DIY, or textile work.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>Projection Rooms</h3>
+                    <p>Description: Display or viewing spaces for art, media, or screenings</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Coworking/Meeting Room</h3>
+                    <p>Shared or private desk spaces for focused work or collaboration.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+                <div class="room-type-card">
+                    <div class="room-type-icon">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <h3>Movement & Wellness Room</h3>
+                    <p>Rooms for physical or mental well-being—dance, yoga, meditation, fitness.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-outline btn-sm">View Rooms</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose Our Rooms</h2>
+                <p>We provide the best facilities for your needs</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h3>High-Speed Internet</h3>
+                    <p>All rooms equipped with reliable, high-speed Wi-Fi connection</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <h3>Modern Technology</h3>
+                    <p>Latest audio-visual equipment and presentation tools</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <h3>Refreshment Services</h3>
+                    <p>Coffee, water, and catering options available upon request</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Flexible Hours</h3>
+                    <p>Book rooms from early morning to late evening</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wheelchair"></i>
+                    </div>
+                    <h3>Accessibility</h3>
+                    <p>All rooms are accessible for individuals with disabilities</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Technical Support</h3>
+                    <p>On-site technical assistance available when needed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Reserve a room in three simple steps</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Find a Room</h3>
+                    <p>Search for available rooms based on your requirements and preferences</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Book Your Slot</h3>
+                    <p>Select your preferred date and time slot for the reservation</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Confirm & Use</h3>
+                    <p>Receive confirmation and access details for your reserved room</p>
+                </div>
+            </div>
+        </div>
+    </section>
+  
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to receive notifications about new rooms and special offers</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your Email Address">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <p>The easiest way to find your space to create :)</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                        <li><a href="">About Us</a></li>
+                        <li><a href="">Contact</a></li>
+                        <li><a href="">Privacy Policy</a></li>
+                        <li><a href="">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                        <li><i class="fas fa-phone"></i> 000000000</li>
+                        <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+ 
+<script src="{% static 'CLIENT/js/client.js' %}"></script>
+
+</body>
+</html>

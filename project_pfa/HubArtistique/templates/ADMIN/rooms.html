@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms Management - HubArtistique</title>
+    <link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+    <style>
+    /* From Uiverse.io by vinodjangid07 */ 
+.cssbuttons-io-button {
+  display: flex;
+  align-items: center;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 17px;
+  padding: 0.8em 1.5em 0.8em 1.2em;
+  color: white;
+  background: #ad5389;
+  background: linear-gradient(0deg, rgb(120, 47, 255) 0%, rgb(185, 132, 255) 100%);
+  border: none;
+  box-shadow: 0 0.7em 1.5em -0.5em rgb(184, 146, 255);
+  letter-spacing: 0.05em;
+  border-radius: 20em;
+}
+
+.cssbuttons-io-button svg {
+  margin-right: 8px;
+}
+
+.cssbuttons-io-button:hover {
+  box-shadow: 0 0.5em 1.5em -0.5em rgb(149, 91, 255);
+}
+
+.cssbuttons-io-button:active {
+  box-shadow: 0 0.3em 1em -0.5em rgb(160, 109, 255);
+}
+        #popupForm {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+#popupForm h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+#popupForm form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#popupForm label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+#popupForm input, 
+#popupForm select, 
+#popupForm textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+#popupForm textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#popupForm .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#popupForm button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+#popupForm button.btn-success {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+}
+
+#popupForm button.btn-success:hover {
+    background-color: #45a049;
+}
+
+#popupForm button.btn-secondary {
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+#popupForm button.btn-secondary:hover {
+    background-color: #e7e7e7;
+}
+
+/* Overlay background */
+.form-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Form field error styling */
+#popupForm .errorlist {
+    color: #d9534f;
+    font-size: 12px;
+    margin-top: 5px;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #popupForm {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    #popupForm .form-actions {
+        flex-direction: column;
+    }
+    
+    #popupForm button {
+        width: 100%;
+    }
+}
+        
+        .room-thumbnail {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="admin-logo">
+                    <a href="{% url 'dashboard' %}">Hub<span>Artistique</span></a>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="admin-profile">
+                <div class="profile-image">
+                    <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
+                </div>
+                <div class="profile-info">
+                    <h3>Admin User</h3>
+                    <p>Administrator</p>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li>
+                        <a href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="{% url 'rooms_admin' %}">
+                            <i class="fas fa-door-open"></i>
+                            <span>Rooms</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'bookings' %}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Bookings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'users' %}">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="{% url 'index' %}" title="View Website">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="#" id="dark-mode-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </a>
+                <a href="{% url 'logout' %}" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search rooms...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <div class="admin-dropdown">
+                        <button class="dropdown-toggle">
+                            <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
+                            <span>Admin User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <h1>Rooms Management</h1>
+                    <button class="btn btn-primary" id="add-room-btn">
+                        <i class="fas fa-plus"></i> Add New Room
+                    </button>
+                </div>
+                
+               <!-- Popup Form -->
+<div id="popupForm" style="display:none;">
+    <form method="POST" enctype="multipart/form-data" action="{% url 'add_room' %}">
+        <h2>Add New Room</h2>
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-success">Save Room</button>
+        <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancel</button>
+    </form>
+</div>
+
+                <!-- Filters -->
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label>Room Type</label>
+                        <select id="filter-type">
+                            <option value="">All Types</option>
+                            <option value="photoVideoStudio">Photography / Video Studio</option>
+                            <option value="audioRecordingStudio">Audio Recording Studio</option>
+                            <option value="sharedWorkspace">Shared Workspace</option>
+                            <option value="screeningRoom">Screening Room</option>
+                            <option value="musicRehearsalStudio">Music Rehearsal Studio</option>
+                            <option value="artWorkshop">Art Workshop</option>
+                            <option value="wellnessRoom">Wellness & Relaxation Room</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Building</label>
+                        <select id="filter-building">
+                            <option value="">All Buildings</option>
+                            <option value="creativeLoft">The Creative Loft</option>
+                            <option value="musicFactory">Studio Music Factory</option>
+                            <option value="artisticCenter">The Artistic Center</option>
+                            <option value="motionLab">Motion Lab</option>
+                            <option value="flowMoveCenter">Flow Move Center</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select id="filter-status">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" id="filter-btn">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                </div>
+
+                <!-- Rooms Table -->
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Building</th>
+                                <th>Capacity</th>
+                                <th>Price/Hour</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                                {% for room in rooms %}
+                                <tr>
+                                    <td>{{ room.id}}</td>
+                                    <td>
+                                        {% if room.image %}
+                                            <img src="{{ room.image.url }}" alt="{{ room.name }}" class="room-thumbnail">
+                                        {% else %}
+                                            <img src="{% static 'images/room-placeholder.jpg' %}" alt="No Image" class="room-thumbnail">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ room.name }}</td>
+                                    <td>{{ room.type }}</td>
+                                    <td>{{ room.building }}</td>
+                                    <td>{{ room.capacity }} People</td>
+                                    <td>{{ room.price }} MAD</td>
+                                    <td>
+                                        {% if room.status == 'active' %}
+                                            <span class="status-badge confirmed">Active</span>
+                                        {% elif room.status == 'maintenance' %}
+                                            <span class="status-badge pending">Maintenance</span>
+                                        {% else %}
+                                            <span class="status-badge cancelled">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View" data-id="{{ room.id }}"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit-btn" title="Edit" data-id="{{ room.id }}"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-btn" title="Delete" data-id="{{ room.id }}"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    {% if rooms.has_previous %}
+                        <a href="?page={{ rooms.previous_page_number }}" class="pagination-btn"><i class="fas fa-chevron-left"></i></a>
+                    {% else %}
+                        <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    {% endif %}
+                    
+                    {% for i in rooms.paginator.page_range %}
+                        {% if rooms.number == i %}
+                            <button class="pagination-btn active">{{ i }}</button>
+                        {% else %}
+                            <a href="?page={{ i }}" class="pagination-btn">{{ i }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if rooms.has_next %}
+                        <a href="?page={{ rooms.next_page_number }}" class="pagination-btn"><i class="fas fa-chevron-right"></i></a>
+                    {% else %}
+                        <button class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {% load static %}
+    <script src="{% static 'ADMIN/js/admin.js' %}"></script>
+    <script src="{% static 'ADMIN/js/rooms.js' %}"></script>
+    
+    <script>
+        const btn = document.getElementById("add-room-btn");
+        const formPopup = document.getElementById("popupForm");
+
+        btn.addEventListener("click", () => {
+            formPopup.style.display = "block";
+
+        });
+
+        function hideForm() {
+            formPopup.style.display = "none";
+        }
+    </script>
+    {% comment %} test {% endcomment %}
+</body>
+</html>

@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HubArtistique</title>
+    {% comment %} <link rel="stylesheet" href="css/admin-style.css"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="admin-logo">
+                    <a href="{% url 'dashboard' %}">Hub<span>Artistique</span></a>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="admin-profile">
+                <div class="profile-image">
+                    <img src="images/admin-avatar.jpg" alt="Admin">
+                </div>
+                <div class="profile-info">
+                    <h3>Admin User</h3>
+                    <p>Administrator</p>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li class="active">
+                        <a href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rooms_admin' %}">
+                            <i class="fas fa-door-open"></i>
+                            <span>Rooms</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'bookings' %}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Bookings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'users' %}">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="{% url 'index' %}" title="View Website">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="#" id="dark-mode-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </a>
+                <a href="{% url 'login' %}" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <div class="admin-dropdown">
+                        <button class="dropdown-toggle">
+                            <img src="images/admin-avatar.jpg" alt="Admin">
+                            <span>Admin User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="{% url 'login' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <div class="date-picker">
+                        <button class="date-btn active">Today</button>
+                        <button class="date-btn">Week</button>
+                        <button class="date-btn">Month</button>
+                        <button class="date-btn">Year</button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(114, 92, 193, 0.2);">
+                            <i class="fas fa-calendar-check" style="color: #725cc1;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Bookings</h3>
+                            <p class="stat-number">248</p>
+                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 12% from last month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(52, 195, 143, 0.2);">
+                            <i class="fas fa-users" style="color: #34c38f;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Users</h3>
+                            <p class="stat-number">1,257</p>
+                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 8% from last month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(241, 180, 76, 0.2);">
+                            <i class="fas fa-door-open" style="color: #f1b44c;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Active Rooms</h3>
+                            <p class="stat-number">24</p>
+                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 4% from last month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: rgba(80, 165, 241, 0.2);">
+                            <i class="fas fa-money-bill-wave" style="color: #50a5f1;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Revenue</h3>
+                            <p class="stat-number">45,200 MAD</p>
+                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 15% from last month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2>Booking Statistics</h2>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="bookingChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2>Room Popularity</h2>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="roomChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="recent-bookings">
+                    <div class="section-header">
+                        <h2>Recent Bookings</h2>
+                        <a href="{% url 'bookings' %}" class="view-all">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Room</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#BK1024</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="images/user1.jpg" alt="User">
+                                            <span>Ahmed Khalid</span>
+                                        </div>
+                                    </td>
+                                    <td>Studio Photo Pro</td>
+                                    <td>2023-04-15</td>
+                                    <td>14:00 - 16:00</td>
+                                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#BK1023</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="images/user2.jpg" alt="User">
+                                            <span>Fatima Zahra</span>
+                                        </div>
+                                    </td>
+                                    <td>Podcast & Voice-over Studio</td>
+                                    <td>2023-04-14</td>
+                                    <td>10:00 - 12:00</td>
+                                    <td><span class="status-badge pending">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#BK1022</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="images/user3.jpg" alt="User">
+                                            <span>Youssef Amrani</span>
+                                        </div>
+                                    </td>
+                                    <td>Creative Coworking Space</td>
+                                    <td>2023-04-14</td>
+                                    <td>09:00 - 17:00</td>
+                                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#BK1021</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="images/user4.jpg" alt="User">
+                                            <span>Laila Bensouda</span>
+                                        </div>
+                                    </td>
+                                    <td>Wellness / Massage Room</td>
+                                    <td>2023-04-13</td>
+                                    <td>15:00 - 17:00</td>
+                                    <td><span class="status-badge cancelled">Cancelled</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#BK1020</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="images/user5.jpg" alt="User">
+                                            <span>Karim Tazi</span>
+                                        </div>
+                                    </td>
+                                    <td>Music Studio</td>
+                                    <td>2023-04-12</td>
+                                    <td>18:00 - 22:00</td>
+                                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="bottom-row">
+                    <!-- Popular Rooms -->
+                    <div class="popular-rooms">
+                        <div class="section-header">
+                            <h2>Popular Rooms</h2>
+                            <a href="{% url 'rooms_admin' %}" class="view-all">View All</a>
+                        </div>
+                        <div class="rooms-list">
+                            <div class="room-item">
+                                <img src="images/photopro.jpg" alt="Studio Photo Pro">
+                                <div class="room-details">
+                                    <h3>Studio Photo Pro</h3>
+                                    <p>Photography</p>
+                                    <div class="room-stats">
+                                        <span><i class="fas fa-calendar-check"></i> 42 bookings</span>
+                                        <span><i class="fas fa-star"></i> 4.8/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="room-item">
+                                <img src="images/podcast2.jpg" alt="Podcast Studio">
+                                <div class="room-details">
+                                    <h3>Podcast & Voice-over Studio</h3>
+                                    <p>Audio Recording Studio</p>
+                                    <div class="room-stats">
+                                        <span><i class="fas fa-calendar-check"></i> 38 bookings</span>
+                                        <span><i class="fas fa-star"></i> 4.7/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="room-item">
+                                <img src="images/coworking.jpg" alt="Coworking Space">
+                                <div class="room-details">
+                                    <h3>Creative Coworking Space</h3>
+                                    <p>Shared WorkSpace</p>
+                                    <div class="room-stats">
+                                        <span><i class="fas fa-calendar-check"></i> 35 bookings</span>
+                                        <span><i class="fas fa-star"></i> 4.6/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="recent-activities">
+                        <div class="section-header">
+                            <h2>Recent Activities</h2>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="activities-list">
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background-color: rgba(114, 92, 193, 0.2);">
+                                    <i class="fas fa-user-plus" style="color: #725cc1;"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <p><strong>New user registered</strong></p>
+                                    <p>Nadia El Fassi created an account</p>
+                                    <p class="activity-time">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background-color: rgba(52, 195, 143, 0.2);">
+                                    <i class="fas fa-calendar-plus" style="color: #34c38f;"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <p><strong>New booking created</strong></p>
+                                    <p>Ahmed Khalid booked Studio Photo Pro</p>
+                                    <p class="activity-time">3 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background-color: rgba(241, 180, 76, 0.2);">
+                                    <i class="fas fa-edit" style="color: #f1b44c;"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <p><strong>Room updated</strong></p>
+                                    <p>Music Studio details were updated</p>
+                                    <p class="activity-time">5 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background-color: rgba(244, 106, 106, 0.2);">
+                                    <i class="fas fa-times-circle" style="color: #f46a6a;"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <p><strong>Booking cancelled</strong></p>
+                                    <p>Laila Bensouda cancelled her booking</p>
+                                    <p class="activity-time">1 day ago</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon" style="background-color: rgba(80, 165, 241, 0.2);">
+                                    <i class="fas fa-check-circle" style="color: #50a5f1;"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <p><strong>Booking confirmed</strong></p>
+                                    <p>Youssef Amrani's booking was confirmed</p>
+                                    <p class="activity-time">1 day ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   {% load static %}
+<script src="{% static 'ADMIN/js/admin.js' %}"></script>
+
+</body>
+</html>

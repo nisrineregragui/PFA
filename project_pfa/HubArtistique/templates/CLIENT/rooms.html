@@ -1,0 +1,336 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms - Room Reservation System</title>
+    {% comment %} <link rel="stylesheet" href="css/client-style.css"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+     <!-- Header -->
+     <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li ><a href="{% url 'index' %}">Home</a></li>
+                    <li class="active"><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Available Rooms</h1>
+            <div class="breadcrumbs">
+                <a href="{% url 'index' %}">Home</a> / <span>Rooms</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rooms Filter -->
+    <section class="rooms-filter">
+        <div class="container">
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label>Room Type</label>
+                    <select id="filter-type">
+                        <option value="">Any Type</option>
+                            <option value="photoVideoStudio">Photography / Video Studio</option>
+                            <option value="videoStudio">Video Studio</option>
+                            <option value="audioRecordingStudio">Audio Recording Studio</option>
+                            <option value="sharedWorkspace">Shared Workspace</option>
+                            <option value="screeningRoom">Screening Room</option>
+                            <option value="musicRehearsalStudio">Music Rehearsal Studio</option>
+                            <option value="musicRecordingStudio">Music Recording Studio</option>
+                            <option value="musicProductionStudio">Music Production Studio</option>
+                            <option value="premiumStudio">Premium Studio</option>
+                            <option value="artWorkshop">Art Workshop</option>
+                            <option value="makerDIYWorkshop">Maker / DIY Workshop</option>
+                            <option value="textileWorkshop">Textile Workshop</option>
+                            <option value="exhibitionSpace">Exhibition Space</option>
+                            <option value="socialCafeSpace">Social Space / Café</option>
+                            <option value="filmProductionStudio">Film/Video Production Studio</option>
+                            <option value="motionCaptureStudio">Motion Capture Studio</option>
+                            <option value="postProductionStudio">Post-production Studio</option>
+                            <option value="visualEffectsStudio">Visual Effects Studio</option>
+                            <option value="virtualRealityStudio">Virtual Reality Studio</option>
+                            <option value="danceStudio">Dance Studio</option>
+                            <option value="yogaMeditationSpace">Yoga / Meditation Space</option>
+                            <option value="fitnessStudio">Fitness Studio</option>
+                            <option value="wellnessRelaxationRoom">Wellness & Relaxation Room</option>
+                          </select>
+                </div>
+                <div class="filter-group">
+                    <label>Building</label>
+                    <select id="filter-building">
+                        <option>Any Building</option>
+                        <option>The Creative Loft</option>
+                        <option>Studio Music Factory</option>
+                        <option>The Artistic Center</option>
+                        <option>Motion Lab</option>
+                        <option>Flow Move Center</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Capacity</label>
+                    <select id="filter-capacity">
+                        <option value="">Any Capacity</option>
+                        <option value="1-5">1-5 People</option>
+                        <option value="6-10">6-10 People</option>
+                        <option value="11-20">11-20 People</option>
+                        <option value="21+">21+ People</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Features</label>
+                    <select id="filter-features">
+                        <option value="">Any Feature</option>
+                            <option value="highSpeedWifi">High-Speed Wi-Fi</option>
+                            <option value="4KCamera">4K Camera</option>
+                            <option value="greenScreen">Green Screen</option>
+                            <option value="softbox">Softbox</option>
+                            <option value="reflectors">Reflectors</option>
+                            <option value="soundproofing">Soundproofing</option>
+                            <option value="mixingDesk">Mixing Desk</option>
+                            <option value="neumannMicrophone">Neumann Microphone</option>
+                            <option value="midiKeyboard">MIDI Keyboard</option>
+                            <option value="audioInterface">Audio Interface</option>
+                            <option value="laserCutting">Laser Cutting</option>
+                            <option value="sewingMachines">Sewing Machines</option>
+                            <option value="projector">Projector</option>
+                            <option value="surroundSound">Surround Sound</option>
+                            <option value="acousticTreatment">Acoustic Treatment</option>
+                            <option value="motionCaptureSensors">Motion Capture Sensors</option>
+                            <option value="hdrScreen">HDR Screen</option>
+                            <option value="graphicTablets">Graphic Tablets</option>
+                            <option value="oculusHeadset">Oculus/HTC Headset</option>
+                            <option value="fitnessEquipment">Fitness Equipment</option>
+                            <option value="massageTable">Massage Table</option>
+                            <option value="miniBar">Mini Bar</option>
+                            <option value="loungingArea">Lounging Area</option>
+                          </select>
+                </div>
+                <button id="filter-btn" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Date & Time Filter -->
+    <section class="date-time-filter">
+        <div class="container">
+            <div class="date-time-container">
+                <div class="date-group">
+                    <label>Date</label>
+                    <input type="date" id="filter-date">
+                </div>
+                <div class="time-group">
+                    <label>Start Time</label>
+                    <input type="time" id="filter-start-time">
+                </div>
+                <div class="time-group">
+                    <label>End Time</label>
+                    <input type="time" id="filter-end-time">
+                </div>
+                <button id="check-availability-btn" class="btn btn-primary">Check Availability</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rooms List -->
+    <section class="rooms-list">
+        <div class="container">
+            <div class="rooms-grid">
+                <!-- Room 1 -->
+                <div class="room-card">
+                    <div class="room-image">
+                         <img src="{% static 'CLIENT/images/cinema.jpg' %}">
+                        <div class="room-price">500mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Screening Room</div>
+                        <h3>Projection Room / Mini Cinema</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 20 People</span>
+                            <span><i class="fas fa-tv"></i> Projector</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p>A cozy, soundproof screening room with a large screen and surround sound for watching films or project presentations.</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                
+                <!-- Room 2 -->
+                <div class="room-card">
+                    <div class="room-image">
+                         <img src="{% static 'CLIENT/images/chill.jpg' %}">
+                        <div class="room-price">300mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Social Space / Café</div>
+                        <h3>Chill + Creative Café Space</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 10 People</span>
+                            <span><i class="fas fa-chalkboard"></i> Whiteboard</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p>A relaxing area with a creative atmosphere for working, brainstorming, or simply enjoying a cup of coffee.</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                
+                <!-- Room 3 -->
+                <div class="room-card">
+                    <div class="room-image">
+                         <img src="{% static 'CLIENT/images/gym.jpg' %}">
+                        <div class="room-price">250mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Fitness Studio</div>
+                        <h3>Private Sports Coaching Room</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 12 People</span>
+                            <span><i class="fas fa-laptop"></i> Computer Workstations</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>A personal coaching space with fitness equipment, mats, and resistance bands, with a coach available for guided sessions..</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                
+                <!-- Room 4 -->
+                <div class="room-card">
+                    <div class="room-image">
+                          <img src="{% static 'CLIENT/images/DIY.jpg' %}">
+                        <div class="room-price">120mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Maker / DIY Workshop</div>
+                        <h3>DIY / Maker Space Workshop</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 3 People</span>
+                            <span><i class="fas fa-phone"></i> Phone System</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p>A space for creating DIY projects with tools and equipment for light construction, plus laser-cutting capabilities.</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                
+                <!-- Room 5 -->
+                <div class="room-card">
+                    <div class="room-image">
+                          <img src="{% static 'CLIENT/images/massage.jpg' %}">
+                        <div class="room-price">400mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Wellness & Relaxation Room</div>
+                        <h3>Wellness / Massage Room</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 15 People</span>
+                            <span><i class="fas fa-video"></i> Video Conferencing</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p> A peaceful room designed for wellness activities such as massage therapy, featuring a massage table, soft music, and warm lighting.</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                
+                <!-- Room 6 -->
+                <div class="room-card">
+                    <div class="room-image">
+                       <img src="{% static 'CLIENT/images/coworking.jpg' %}">
+                        <div class="room-price">90mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Shared Workspace</div>
+                        <h3>Creative Coworking Space</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 12 People</span>
+                            <span><i class="fas fa-coffee"></i> Coffee Bar</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p> A collaborative area with desks for editing, writing, and sound/video production.</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div> 
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <span class="pagination-ellipsis">...</span>
+                <button class="pagination-btn">10</button>
+                <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <p>The easiest way to find your space to create :)</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                        <li><a href="">About Us</a></li>
+                        <li><a href="">Contact</a></li>
+                        <li><a href="">Privacy Policy</a></li>
+                        <li><a href="">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                        <li><i class="fas fa-phone"></i> 000000000</li>
+                        <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'CLIENT/js/client.js' %}"></script>
+</body>
+</html>

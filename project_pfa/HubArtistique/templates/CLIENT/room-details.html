@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Conference Room A - Room Reservation System</title>
+    {% comment %} <link rel="stylesheet" href="css/client-style.css"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+     <!-- Header -->
+     <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Executive Conference Room A</h1>
+            <div class="breadcrumbs">
+               <a href="{% url 'index' %}">Home</a> / <a href="{% url 'rooms' %}">Rooms</a> / <span>Executive Conference Room A</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Room Details -->
+    <section class="room-details">
+        <div class="container">
+            <div class="room-details-grid">
+                <div class="room-gallery">
+                    <div class="main-image">
+                      <img src="{% static 'CLIENT/images/studio1.jpg' %}">
+                    </div>
+                    <div class="gallery-thumbnails">
+                        <img src="{% static 'CLIENT/images/photopro.jpg' %}" class="active">
+                        <img src="{% static 'CLIENT/images/studio3.jpg' %}">
+                        <img src="{% static 'CLIENT/images/studio4.jpg' %}">
+                       <img src="{% static 'CLIENT/images/studio5.jpg' %}">
+                    </div>
+                </div>
+                <div class="room-info">
+                    <div class="room-header">
+                        <div>
+                            <div class="room-type">Studio</div>
+                            <h2>Music Studio</h2>
+                        </div>
+                        <div class="room-price-display">
+                            <div class="price">500</div>
+                            <div class="per-night">per hour</div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-description">
+                        <p>Our Music Studio is a professional-grade space designed to meet the needs of musicians, producers, and sound engineers. Whether you’re here for a solo recording session, a band rehearsal, or creating a new track, this studio offers everything you need to produce high-quality music. It features top-of-the-line equipment, including soundproofing for pristine acoustics, a wide variety of instruments, and the latest audio production tools.
+                        </p>
+                    </div>
+                    
+                    <div class="room-features-list">
+                        <h3>Room Features</h3>
+                        <ul>
+                            <li><i class="fas fa-check"></i>Soundproofing</li>
+                            <li><i class="fas fa-check"></i> Neumann microphones, audio interfaces, MIDI keyboards
+                            </li>
+                            <li><i class="fas fa-check"></i>Electric and acoustic guitars, bass, drums, keyboards, and amplifiers f</li>
+                            <li><i class="fas fa-check"></i> High-definition video conferencing</li>
+                            <li><i class="fas fa-check"></i> Integrated sound system</li>
+                            <li><i class="fas fa-check"></i> High-speed Wi-Fi</li>
+                            <li><i class="fas fa-check"></i> Adjustable lighting</li>
+                            <li><i class="fas fa-check"></i> Climate control</li>
+                            <li><i class="fas fa-check"></i> Whiteboard and flip charts</li>
+                            <li><i class="fas fa-check"></i> Water and coffee service</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="booking-form">
+                        <h3>Reserve This Room</h3>
+                        <form id="room-booking-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="booking-date">Date</label>
+                                    <input type="date" id="booking-date" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="start-time">Start Time</label>
+                                    <input type="time" id="start-time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end-time">End Time</label>
+                                    <input type="time" id="end-time" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="attendees">Number of Attendees</label>
+                                    <select id="attendees" required>
+                                        <option value="1-5">1-5 People</option>
+                                        <option value="6-10">6-10 People</option>
+                                        <option value="11-15">11-15 People</option>
+                                        <option value="16-20">16-20 People</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="purpose">Purpose of Reservation</label>
+                                    <select id="purpose" required>
+                                        <option value="meeting">Meeting</option>
+                                        <option value="presentation">Presentation</option>
+                                        <option value="training">Training</option>
+                                        <option value="interview">Interview</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="booking-summary">
+                                <div class="summary-row">
+                                    <span>Room Rate</span>
+                                    <span>500 x <span id="hours-count">2</span> hours</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Equipment Fee</span>
+                                    <span id="equipment-fee">0.00</span>          
+                                    <!-- equipment-fee -->
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total</span>
+                                    <span id="total-amount">100mad</span>
+                                </div>
+                                <!-- total-amount -->
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Additional Equipment</label>
+                                    <div class="checkbox-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="equipment" value="Professional Acoustics"> Professional Acoustics(+50mad/hour)
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="equipment" value="microphone"> Wireless Microphones (+50mad/hour)
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="equipment" value="Live Recording Optionsvideoconf"> Live Recording Options (+150mad/hour)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Reserve Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Room Availability Calendar -->
+            <div class="room-availability">
+                <h3>Room Availability</h3>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <h4 id="calendar-month">April 2023</h4>
+                        <button class="calendar-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Sun</div>
+                        <div class="calendar-day-header">Mon</div>
+                        <div class="calendar-day-header">Tue</div>
+                        <div class="calendar-day-header">Wed</div>
+                        <div class="calendar-day-header">Thu</div>
+                        <div class="calendar-day-header">Fri</div>
+                        <div class="calendar-day-header">Sat</div>
+                        
+                        <!-- Calendar days will be generated by JavaScript -->
+                        <div class="calendar-day disabled">26</div>
+                        <div class="calendar-day disabled">27</div>
+                        <div class="calendar-day disabled">28</div>
+                        <div class="calendar-day disabled">29</div>
+                        <div class="calendar-day disabled">30</div>
+                        <div class="calendar-day disabled">31</div>
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day busy">6</div>
+                        <div class="calendar-day busy">7</div>
+                        <div class="calendar-day">8</div>
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day busy">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day busy">17</div>
+                        <div class="calendar-day busy">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day disabled">1</div>
+                        <div class="calendar-day disabled">2</div>
+                        <div class="calendar-day disabled">3</div>
+                        <div class="calendar-day disabled">4</div>
+                        <div class="calendar-day disabled">5</div>
+                        <div class="calendar-day disabled">6</div>
+                    </div>
+                    <div class="calendar-legend">
+                        <div class="legend-item">
+                            <span class="legend-color available"></span>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color busy"></span>
+                            <span>Fully Booked</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color selected"></span>
+                            <span>Selected Date</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+           
+    <!-- Similar Rooms -->
+    <section class="similar-rooms">
+        <div class="container">
+            <div class="section-header">
+                <h2>Similar Rooms</h2>
+                <p>You might also be interested in these rooms</p>
+            </div>
+            <div class="rooms-grid">
+                <div class="room-card">
+                    <div class="room-image">
+                        <img src="{% static 'CLIENT/images/studio3.jpg' %}">
+                        <div class="room-price">300mad<span>/hour</span></div>
+                    </div>
+                    <div class="room-details">
+                        <div class="room-type">Studio</div>
+                        <h3>Studio type B</h3>
+                        <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 16 People</span>
+                            <span><i class="fas fa-tv"></i> Projector</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div>
+                        <p>blablablabla</p>
+                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                <!-- other rooms here -->
+            </div>
+        </div>
+    </section>
+
+   <!-- Footer -->
+   <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                </div>
+                <p>The easiest way to find your space to create :)</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="">About Us</a></li>
+                    <li><a href="">Contact</a></li>
+                    <li><a href="">Privacy Policy</a></li>
+                    <li><a href="">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="contact-info">
+                    <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                    <li><i class="fas fa-phone"></i> 000000000</li>
+                    <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
+<script src="{% static 'CLIENT/js/client.js' %}"></script>
+</body>
+</html>

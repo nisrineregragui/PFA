@@ -1,0 +1,241 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Management - HubArtistique</title>
+    {% comment %} <link rel="stylesheet" href="css/admin-style.css"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="admin-logo">
+                    <a href="{% url 'dashboard' %}">Hub<span>Artistique</span></a>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="admin-profile">
+                <div class="profile-image">
+                    <img src="images/admin-avatar.jpg" alt="Admin">
+                </div>
+                <div class="profile-info">
+                    <h3>Admin User</h3>
+                    <p>Administrator</p>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li>
+                        <a href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rooms_admin' %}">
+                            <i class="fas fa-door-open"></i>
+                            <span>Rooms</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'bookings' %}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Bookings</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="{% url 'users' %}">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="{% url 'index' %}" title="View Website">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="#" id="dark-mode-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </a>
+                <a href="{% url 'login' %}" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search users...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <div class="admin-dropdown">
+                        <button class="dropdown-toggle">
+                            <img src="images/admin-avatar.jpg" alt="Admin">
+                            <span>Admin User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="{% url 'login' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <h1>Users Management</h1>
+                    <button class="btn btn-primary" id="add-user-btn">
+                        <i class="fas fa-plus"></i> Add New User
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label>Role</label>
+                        <select id="filter-role">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="user">Regular User</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select id="filter-status">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Registration Date</label>
+                        <div class="date-range">
+                            <input type="date" id="filter-start-date">
+                            <span>to</span>
+                            <input type="date" id="filter-end-date">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="filter-btn">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                </div>
+
+                <!-- Users Table -->
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Bookings</th>
+                                <th>Registered</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{user.id}}</td>
+                                <td>
+                                    <div class="user-info">
+                                        {% comment %} <img src="images/user1.jpg" alt="User"> {% endcomment %}
+                                        <span>{{user.first_name}}</span>
+                                    </div>
+                                </td>
+                                <td>{{user.email}}</td>
+                                <td>{{user.phone}}</td>
+                                <td>{{user.role}}</td>
+                                <td>12</td>
+                                <td>{{user.date_joined}}</td>
+                                <td><span class="status-badge confirmed">Active</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn view-btn" title="View" data_id="{{user.id}}"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit" data-id="{{ user.id }}"></i></button>
+                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash" data-id="{{ user.id }}"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            {% empty %}
+                             <tr>
+                             <td colspan="9" class="text-center">No users found</td>
+                             </tr>
+
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <!-- Pagination -->
+<div class="pagination">
+    {% if users.has_previous %}
+        <a href="?page={{ users.previous_page_number }}" class="pagination-btn"><i class="fas fa-chevron-left"></i></a>
+    {% else %}
+        <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+    {% endif %}
+    
+    {% for i in users.paginator.page_range %}
+        {% if users.number == i %}
+            <button class="pagination-btn active">{{ i }}</button>
+        {% else %}
+            <a href="?page={{ i }}" class="pagination-btn">{{ i }}</a>
+        {% endif %}
+    {% endfor %}
+    
+    {% if users.has_next %}
+        <a href="?page={{ users.next_page_number }}" class="pagination-btn"><i class="fas fa-chevron-right"></i></a>
+    {% else %}
+        <button class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
+    {% endif %}
+</div>
+            </div>
+        </main>
+    </div>
+
+    
+    </div>
+
+    {% load static %}
+<script src="{% static 'ADMIN/js/admin.js' %}"></script>
+{% load static %}
+<script src="{% static 'ADMIN/js/rooms.js' %}"></script>
+
+</body>
+</html>
