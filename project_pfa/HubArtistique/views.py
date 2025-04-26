@@ -14,8 +14,8 @@ def index(request):
 def room_details(request):
     return render(request, 'CLIENT/room-details.html')
 
-def rooms(request):
-    return render(request, 'CLIENT/rooms.html')
+# def rooms(request):
+#     return render(request, 'CLIENT/rooms.html')
 
 def bookings(request):
     return render(request, 'ADMIN/bookings.html')
@@ -39,6 +39,9 @@ def rooms_admin(request):
     rooms = Room.objects.all()
     return render(request, 'admin/rooms.html', {'rooms': rooms, 'form': form})
 
+def rooms_view(request):
+    rooms = Room.objects.all()  
+    return render(request, 'CLIENT/rooms.html', {'rooms': rooms})
 
 def users(request):
     return render(request, 'ADMIN/users.html')
@@ -133,3 +136,7 @@ def add_room(request):
     return render(request, 'ADMIN/rooms.html', {'form': form})
 # def rooms(request):
 #     all_rooms= rooms.objects.all()
+
+def rooms(request):
+    rooms = Room.objects.all()  
+    return render(request, 'CLIENT/rooms.html', {'rooms': rooms})

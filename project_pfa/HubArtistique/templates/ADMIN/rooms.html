@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
  
     <style>
-    /* From Uiverse.io by vinodjangid07 */ 
 .cssbuttons-io-button {
   display: flex;
   align-items: center;
@@ -363,11 +362,11 @@
                                     <td>{{ room.type }}</td>
                                     <td>{{ room.building }}</td>
                                     <td>{{ room.capacity }} People</td>
-                                    <td>{{ room.price }} MAD</td>
+                                    <td>{{ room.hourly_rate }} MAD</td>
                                     <td>
-                                        {% if room.status == 'active' %}
+                                        {% if room.is_active == 1 %}
                                             <span class="status-badge confirmed">Active</span>
-                                        {% elif room.status == 'maintenance' %}
+                                        {% elif room.is_active == 2 %}
                                             <span class="status-badge pending">Maintenance</span>
                                         {% else %}
                                             <span class="status-badge cancelled">Inactive</span>
@@ -429,6 +428,6 @@
             formPopup.style.display = "none";
         }
     </script>
-    {% comment %} test {% endcomment %}
+    
 </body>
 </html>

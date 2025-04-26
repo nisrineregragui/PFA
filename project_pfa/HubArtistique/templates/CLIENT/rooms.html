@@ -161,117 +161,26 @@
         <div class="container">
             <div class="rooms-grid">
                 <!-- Room 1 -->
+                {% for room in rooms %}
                 <div class="room-card">
                     <div class="room-image">
-                         <img src="{% static 'CLIENT/images/cinema.jpg' %}">
-                        <div class="room-price">500mad<span>/hour</span></div>
+                         <img src="{{ room.image.url }}">
+                        <div class="room-price">{{ room.hourly_rate }}mad<span>/hour</span></div>
                     </div>
                     <div class="room-details">
-                        <div class="room-type">Screening Room</div>
-                        <h3>Projection Room / Mini Cinema</h3>
-                        <div class="room-features">
+                        <div class="room-type">{{ room.type }}</div>
+                        <h3>{{ room.name }}</h3>
+                        {% comment %} <div class="room-features">
                             <span><i class="fas fa-user"></i> Up to 20 People</span>
                             <span><i class="fas fa-tv"></i> Projector</span>
                             <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p>A cozy, soundproof screening room with a large screen and surround sound for watching films or project presentations.</p>
+                        </div> {% endcomment %}
+                        <p>{{ room.description }}</p>
                         <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
                     </div>
                 </div>
                 
-                <!-- Room 2 -->
-                <div class="room-card">
-                    <div class="room-image">
-                         <img src="{% static 'CLIENT/images/chill.jpg' %}">
-                        <div class="room-price">300mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Social Space / Café</div>
-                        <h3>Chill + Creative Café Space</h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 10 People</span>
-                            <span><i class="fas fa-chalkboard"></i> Whiteboard</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p>A relaxing area with a creative atmosphere for working, brainstorming, or simply enjoying a cup of coffee.</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
-                    </div>
-                </div>
-                
-                <!-- Room 3 -->
-                <div class="room-card">
-                    <div class="room-image">
-                         <img src="{% static 'CLIENT/images/gym.jpg' %}">
-                        <div class="room-price">250mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Fitness Studio</div>
-                        <h3>Private Sports Coaching Room</h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 12 People</span>
-                            <span><i class="fas fa-laptop"></i> Computer Workstations</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>A personal coaching space with fitness equipment, mats, and resistance bands, with a coach available for guided sessions..</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
-                    </div>
-                </div>
-                
-                <!-- Room 4 -->
-                <div class="room-card">
-                    <div class="room-image">
-                          <img src="{% static 'CLIENT/images/DIY.jpg' %}">
-                        <div class="room-price">120mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Maker / DIY Workshop</div>
-                        <h3>DIY / Maker Space Workshop</h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 3 People</span>
-                            <span><i class="fas fa-phone"></i> Phone System</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p>A space for creating DIY projects with tools and equipment for light construction, plus laser-cutting capabilities.</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
-                    </div>
-                </div>
-                
-                <!-- Room 5 -->
-                <div class="room-card">
-                    <div class="room-image">
-                          <img src="{% static 'CLIENT/images/massage.jpg' %}">
-                        <div class="room-price">400mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Wellness & Relaxation Room</div>
-                        <h3>Wellness / Massage Room</h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 15 People</span>
-                            <span><i class="fas fa-video"></i> Video Conferencing</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p> A peaceful room designed for wellness activities such as massage therapy, featuring a massage table, soft music, and warm lighting.</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
-                    </div>
-                </div>
-                
-                <!-- Room 6 -->
-                <div class="room-card">
-                    <div class="room-image">
-                       <img src="{% static 'CLIENT/images/coworking.jpg' %}">
-                        <div class="room-price">90mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Shared Workspace</div>
-                        <h3>Creative Coworking Space</h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 12 People</span>
-                            <span><i class="fas fa-coffee"></i> Coffee Bar</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p> A collaborative area with desks for editing, writing, and sound/video production.</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
-                    </div>
-                </div> 
+                {% endfor %}
                     </div>
                 </div>
             </div>
