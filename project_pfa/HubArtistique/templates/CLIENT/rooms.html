@@ -176,7 +176,7 @@
                             <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
                         </div> {% endcomment %}
                         <p>{{ room.description }}</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                        <a href="{% url 'room_details' room.id %}" class="btn btn-outline">View Details</a>
                     </div>
                 </div>
                 

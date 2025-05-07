@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Cart Item - Room Reservation System</title>
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .edit-cart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .edit-cart-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .time-slots {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .time-slot {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .time-slot.unavailable {
+            background-color: #ffecec;
+            color: #e74c3c;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        @media (max-width: 576px) {
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .checkbox-label input {
+            margin-right: 8px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdecea;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            background-color: #eafaf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if request.session.cart %}
+                    <span class="cart-count">{{ request.session.cart|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Edit Cart Item</h1>
+            <div class="breadcrumbs">
+                <a href="{% url 'index' %}">Home</a> / <a href="{% url 'cart' %}">Cart</a> / <span>Edit Item</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Edit Cart Item Section -->
+    <section class="edit-cart-section">
+        <div class="container">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="edit-cart-container">
+                <h2 class="edit-cart-title">Edit Reservation for {{ room.name }}</h2>
+                
+                <form method="post" action="{% url 'edit_cart_item' item_index=item_index %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="booking-date">Date</label>
+                            <input type="date" id="booking-date" name="booking-date" required min="{{ today|date:'Y-m-d' }}" 
+                                   value="{{ item.date }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start-time">Start Time</label>
+                            <input type="time" id="start-time" name="start-time" required value="{{ item.start_time }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="end-time">End Time</label>
+                            <input type="time" id="end-time" name="end-time" required value="{{ item.end_time }}">
+                        </div>
+                    </div>
+                    
+                    {% if time_slots %}
+                    <div class="time-slots">
+                        <h4>Reserved Time Slots for {{ item.date }}</h4>
+                        <div class="time-slots-container">
+                            {% for slot in time_slots %}
+                            <div class="time-slot unavailable">
+                                <span>{{ slot.start_time }} - {{ slot.end_time }}</span>
+                                <span>Reserved</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="attendees">Number of Attendees</label>
+                            <select id="attendees" name="attendees" required>
+                                <option value="1-5" {% if item.attendees == '1-5' %}selected{% endif %}>1-5 People</option>
+                                <option value="6-10" {% if item.attendees == '6-10' %}selected{% endif %}>6-10 People</option>
+                                <option value="11-15" {% if item.attendees == '11-15' %}selected{% endif %}>11-15 People</option>
+                                <option value="16-20" {% if item.attendees == '16-20' %}selected{% endif %}>16-20 People</option>
+                                {% if room.capacity > 20 %}
+                                <option value="21+" {% if item.attendees == '21+' %}selected{% endif %}>21+ People</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Additional Equipment</label>
+                            <div class="checkbox-group">
+                                {% for equipment in all_equipment %}
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="equipment" value="{{ equipment.id }}"
+                                           {% if equipment.id|stringformat:"i" in selected_equipment_ids %}checked{% endif %}> 
+                                    {{ equipment.name }} 
+                                    {% for room_equipment in room.roomequipment_set.all %}
+                                        {% if room_equipment.equipment.id == equipment.id and room_equipment.price %}
+                                            (+{{ room_equipment.price }}mad/hour)
+                                        {% endif %}
+                                    {% endfor %}
+                                </label>
+                                {% endfor %}
+                                {% if not all_equipment %}
+                                <p>No additional equipment available for this room.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="{% url 'cart' %}" class="btn btn-outline">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Cart</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <p>The easiest way to find your space to create :)</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                        <li><i class="fas fa-phone"></i> 000000000</li>
+                        <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'CLIENT/js/client.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Room Reservation System</title>
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .cart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .cart-count {
+            background-color: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .cart-item {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-image {
+            width: 120px;
+            height: 80px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 20px;
+        }
+        
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cart-item-details {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-type {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item-info span {
+            font-size: 0.9rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+        
+        .cart-item-info i {
+            margin-right: 5px;
+            color: #777;
+        }
+        
+        .cart-item-price {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: absolute;
+            top: 20px;
+            right: 0;
+        }
+        
+        .cart-item-edit {
+            color: #3498db;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+        }
+        
+        .cart-item-remove {
+            color: #e74c3c;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+        }
+        
+        .cart-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .cart-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .cart-summary-row.total {
+            font-weight: 600;
+            font-size: 1.2rem;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .empty-cart i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-cart h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .empty-cart p {
+            color: #777;
+            margin-bottom: 25px;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdecea;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            background-color: #eafaf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if request.session.cart %}
+                    <span class="cart-count">{{ request.session.cart|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Your Cart</h1>
+            <div class="breadcrumbs">
+                <a href="{% url 'index' %}">Home</a> / <span>Cart</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section class="cart-section">
+        <div class="container">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if cart_items %}
+            <div class="cart-container">
+                <div class="cart-header">
+                    <h2>Your Reservations</h2>
+                    <div class="cart-count">{{ cart_items|length }} item{% if cart_items|length != 1 %}s{% endif %}</div>
+                </div>
+                
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.room_name }}">
+                        {% else %}
+                        <img src="{% static 'CLIENT/images/studio1.jpg' %}" alt="{{ item.room_name }}">
+                        {% endif %}
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">{{ item.room_name }}</div>
+                        <div class="cart-item-type">{{ item.room_type }}</div>
+                        <div class="cart-item-info">
+                            <span><i class="fas fa-calendar"></i> {{ item.date }}</span>
+                            <span><i class="fas fa-clock"></i> {{ item.start_time }} - {{ item.end_time }}</span>
+                            <span><i class="fas fa-users"></i> {{ item.attendees }}</span>
+                        </div>
+                        <div class="cart-item-price">{{ item.total_price }}mad</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <a href="{% url 'edit_cart_item' forloop.counter0 %}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'remove_from_cart' forloop.counter0 %}" class="cart-item-remove" 
+                           onclick="return confirm('Are you sure you want to remove this item?')">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="cart-summary">
+                    <div class="cart-summary-row">
+                        <span>Subtotal</span>
+                        <span>{{ total }}mad</span>
+                    </div>
+                    <div class="cart-summary-row total">
+                        <span>Total</span>
+                        <span>{{ total }}mad</span>
+                    </div>
+                </div>
+                
+                <div class="cart-actions">
+                    <a href="{% url 'rooms' %}" class="btn btn-outline">Continue Browsing</a>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="cart-container">
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Looks like you haven't added any rooms to your cart yet.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-primary">Browse Rooms</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <p>The easiest way to find your space to create :)</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                        <li><i class="fas fa-phone"></i> 000000000</li>
+                        <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'CLIENT/js/client.js' %}"></script>
+</body>
+</html>

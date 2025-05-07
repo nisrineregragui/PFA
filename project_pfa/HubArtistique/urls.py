@@ -14,4 +14,22 @@ urlpatterns = [
     path('rooms_admin/', views.rooms_admin, name='rooms_admin'),  
     path('users/', views.users, name='users'),
     path('add-room/', views.add_room, name='add_room'),
+    path('rooms/<int:room_id>/', views.room_details, name='room_details'),
+    path('rooms/<int:room_id>/calculate-price/', views.calculate_price, name='calculate_price'),
+    path('cart/', views.cart, name='cart'),
+    path('cart/edit/<int:item_index>/', views.edit_cart_item, name='edit_cart_item'),
+    path('remove-from-cart/<int:item_index>/', views.remove_from_cart, name='remove_from_cart'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('my-reservations/', views.my_reservations, name='my_reservations'),
+    path('cancel-reservation/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
+    path('bookings/validate/<int:reservation_id>/', views.validate_booking, name='validate_booking'),
+    path('bookings/edit/<int:reservation_id>/', views.edit_booking, name='edit_booking'),
+    path('bookings/delete/<int:reservation_id>/', views.delete_booking, name='delete_booking'),
+    path('users/edit/<int:user_id>/', views.edit_user, name='edit_user'),
+    path('users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('rooms/edit/<int:room_id>/', views.edit_room, name='edit_room'),
+    path('rooms/delete/<int:room_id>/', views.delete_room, name='delete_room'),
+
+   
+    
 ]

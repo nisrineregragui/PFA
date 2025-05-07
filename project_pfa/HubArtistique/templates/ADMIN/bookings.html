@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookings Management - HubArtistique</title>
-    {% comment %} <link rel="stylesheet" href="css/admin-style.css"> {% endcomment %}
-<link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
-
+    <link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -24,7 +22,7 @@
             </div>
             <div class="admin-profile">
                 <div class="profile-image">
-                    <img src="images/admin-avatar.jpg" alt="Admin">
+                    <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
                 </div>
                 <div class="profile-info">
                     <h3>Admin User</h3>
@@ -78,12 +76,12 @@
                 <a href="#" id="dark-mode-toggle" title="Toggle Dark Mode">
                     <i class="fas fa-moon"></i>
                 </a>
-                <a href="{% url 'login' %}" title="Logout">
+                <a href="{% url 'logout' %}" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </aside>
-
+        
         <!-- Main Content -->
         <main class="admin-main">
             <header class="admin-header">
@@ -98,63 +96,61 @@
                     </div>
                     <div class="admin-dropdown">
                         <button class="dropdown-toggle">
-                            <img src="images/admin-avatar.jpg" alt="Admin">
+                            <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
                             <span>Admin User</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu">
                             <a href="#"><i class="fas fa-user"></i> Profile</a>
                             <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="{% url 'login' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
                         </div>
                     </div>
                 </div>
             </header>
-
+            
             <div class="admin-content">
                 <div class="page-header">
                     <h1>Bookings Management</h1>
-                    <button class="btn btn-primary" id="add-booking-btn">
-                        <i class="fas fa-plus"></i> Add New Booking
-                    </button>
-                </div>
 
+                </div>
+                
                 <!-- Filters -->
                 <div class="filters-container">
-                    <div class="filter-group">
-                        <label>Date Range</label>
-                        <div class="date-range">
-                            <input type="date" id="filter-start-date">
-                            <span>to</span>
-                            <input type="date" id="filter-end-date">
+                    <form method="GET" action="{% url 'bookings' %}">
+                        <div class="filter-group">
+                            <label>Date Range</label>
+                            <div class="date-range">
+                                <input type="date" id="filter-start-date" name="start_date" value="{{ start_date|default:'' }}">
+                                <span>to</span>
+                                <input type="date" id="filter-end-date" name="end_date" value="{{ end_date|default:'' }}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="filter-group">
-                        <label>Room</label>
-                        <select id="filter-room">
-                            <option value="">All Rooms</option>
-                            <option value="studioPhotoPro">Studio Photo Pro</option>
-                            <option value="podcastStudio">Podcast & Voice-over Studio</option>
-                            <option value="coworkingSpace">Creative Coworking Space</option>
-                            <option value="projectionRoom">Projection Room / Mini Cinema</option>
-                            <option value="cafeSpace">Chill + Creative Café Space</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Status</label>
-                        <select id="filter-status">
-                            <option value="">All Status</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="pending">Pending</option>
-                            <option value="cancelled">Cancelled</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-secondary" id="filter-btn">
-                        <i class="fas fa-filter"></i> Apply Filters
-                    </button>
+                        <div class="filter-group">
+                            <label>Room</label>
+                            <select id="filter-room" name="room">
+                                <option value="">All Rooms</option>
+                                {% for room in rooms %}
+                                <option value="{{ room.id }}" {% if room_filter == room.id|stringformat:"i" %}selected{% endif %}>{{ room.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="filter-status" name="status">
+                                <option value="">All Status</option>
+                                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-secondary" id="filter-btn">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+                    </form>
                 </div>
-
+                
                 <!-- Bookings Table -->
                 <div class="table-responsive">
                     <table class="admin-table">
@@ -165,171 +161,74 @@
                                 <th>Room</th>
                                 <th>Date</th>
                                 <th>Time</th>
-                                <th>Duration</th>
                                 <th>Total</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for res in reservations %}
                             <tr>
-                                <td>#BK1024</td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="images/user1.jpg" alt="User">
-                                        <span>Ahmed Khalid</span>
-                                    </div>
-                                </td>
-                                <td>Studio Photo Pro</td>
-                                <td>2023-04-15</td>
-                                <td>14:00 - 16:00</td>
-                                <td>2 hours</td>
-                                <td>300 MAD</td>
-                                <td><span class="status-badge confirmed">Confirmed</span></td>
+                                <td>{{ res.id }}</td>
+                                <td>{{ res.user.first_name }} {{ res.user.last_name }}</td>
+                                <td>{{ res.room.name }}</td>
+                                <td>{{ res.date }}</td>
+                                <td>{{ res.start_time }} - {{ res.end_time }}</td>
+                                <td>{{ res.total_price }} MAD</td>
+                                <td><span class="status-badge {{ res.status }}">{{ res.status|title }}</span></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                        <a href="{% url 'validate_booking' res.id %}" class="action-btn view-btn" title="View/Validate"><i class="fas fa-eye"></i></a>
+                                        <button>
+                                            <a href="{% url 'edit_booking' res.id %}" class="action-btn edit-btn" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </button>
+                                        <button>
+                                            <a href="{% url 'delete_booking' res.id %}" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this booking?');" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                            </a>
+
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
+                            {% empty %}
                             <tr>
-                                <td>#BK1023</td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="images/user2.jpg" alt="User">
-                                        <span>Fatima Zahra</span>
-                                    </div>
-                                </td>
-                                <td>Podcast & Voice-over Studio</td>
-                                <td>2023-04-14</td>
-                                <td>10:00 - 12:00</td>
-                                <td>2 hours</td>
-                                <td>800 MAD</td>
-                                <td><span class="status-badge pending">Pending</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
+                                <td colspan="9" class="text-center">No bookings found</td>
                             </tr>
-                            <tr>
-                                <td>#BK1022</td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="images/user3.jpg" alt="User">
-                                        <span>Youssef Amrani</span>
-                                    </div>
-                                </td>
-                                <td>Creative Coworking Space</td>
-                                <td>2023-04-14</td>
-                                <td>09:00 - 17:00</td>
-                                <td>8 hours</td>
-                                <td>2400 MAD</td>
-                                <td><span class="status-badge confirmed">Confirmed</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#BK1021</td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="images/user4.jpg" alt="User">
-                                        <span>Laila Bensouda</span>
-                                    </div>
-                                </td>
-                                <td>Wellness / Massage Room</td>
-                                <td>2023-04-13</td>
-                                <td>15:00 - 17:00</td>
-                                <td>2 hours</td>
-                                <td>800 MAD</td>
-                                <td><span class="status-badge cancelled">Cancelled</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#BK1020</td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="images/user5.jpg" alt="User">
-                                        <span>Karim Tazi</span>
-                                    </div>
-                                </td>
-                                <td>Music Studio</td>
-                                <td>2023-04-12</td>
-                                <td>18:00 - 22:00</td>
-                                <td>4 hours</td>
-                                <td>2000 MAD</td>
-                                <td><span class="status-badge confirmed">Confirmed</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#BK1019</td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="images/user6.jpg" alt="User">
-                                        <span>Nadia El Fassi</span>
-                                    </div>
-                                </td>
-                                <td>DIY / Maker Space Workshop</td>
-                                <td>2023-04-11</td>
-                                <td>13:00 - 16:00</td>
-                                <td>3 hours</td>
-                                <td>360 MAD</td>
-                                <td><span class="status-badge completed">Completed</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
-
+                
                 <!-- Pagination -->
                 <div class="pagination">
+                    {% if reservations.has_previous %}
+                    <a href="?page={{ reservations.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if room_filter %}&room={{ room_filter }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="pagination-btn"><i class="fas fa-chevron-left"></i></a>
+                    {% else %}
                     <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                    <button class="pagination-btn active">1</button>
-                    <button class="pagination-btn">2</button>
-                    <button class="pagination-btn">3</button>
-                    <span class="pagination-ellipsis">...</span>
-                    <button class="pagination-btn">10</button>
-                    <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                    {% endif %}
+                    
+                    {% for i in reservations.paginator.page_range %}
+                    {% if reservations.number == i %}
+                    <button class="pagination-btn active">{{ i }}</button>
+                    {% else %}
+                    <a href="?page={{ i }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if room_filter %}&room={{ room_filter }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="pagination-btn">{{ i }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if reservations.has_next %}
+                    <a href="?page={{ reservations.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if room_filter %}&room={{ room_filter }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="pagination-btn"><i class="fas fa-chevron-right"></i></a>
+                    {% else %}
+                    <button class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
+                    {% endif %}
                 </div>
             </div>
         </main>
     </div>
-
     
-    </div>
-
-    {% comment %} <script src="js/admin.js"></script> {% endcomment %}
-    {% load static %}
-<script src="{% static 'ADMIN/js/admin.js' %}"></script>
-{% comment %} 
-    <script src="js/bookings.js"></script> {% endcomment %}
-<script src="{% static 'ADMIN/js/bookings.js' %}"></script>
+    <script src="{% static 'ADMIN/js/admin.js' %}"></script>
+    <script src="{% static 'ADMIN/js/bookings.js' %}"></script>
 </body>
 </html>

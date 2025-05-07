@@ -29,22 +29,11 @@ class Building(models.Model):
         return self.name
 
 
-class Room(models.Model):
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+class Feature(models.Model):
     name = models.CharField(max_length=100)
-    type = models.CharField(max_length=50)
-    description = models.TextField(blank=True, null=True)
-    floor = models.IntegerField(blank=True, null=True)
-    capacity = models.IntegerField(blank=True, null=True)
-    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    available_equipment = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='room_images/', null=True, blank=True)
-
-    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
-
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
@@ -54,10 +43,41 @@ class Equipment(models.Model):
     def __str__(self):
         return self.name
 
+class Room(models.Model):
+    DISPONIBILITY_CHOICES = [
+        ('dispo', 'Available'),
+        ('maintenance', 'Maintenance'),
+        ('no', 'Unavailable'),
+    ]
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
+    floor = models.IntegerField(blank=True, null=True)
+    capacity = models.IntegerField(blank=True, null=True)
+    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    available_equipment = models.ManyToManyField(Equipment,related_name='rooms_with_available_equipment', blank=True)
+    image = models.ImageField(upload_to='room_images/', null=True, blank=True)
+    additional_equipment = models.ManyToManyField(Equipment, related_name='rooms_with_additional_equipment', blank=True)
+    disponibility = models.CharField(
+        max_length=15,
+        choices=DISPONIBILITY_CHOICES,
+        default='dispo'
+    )
+    features = models.ManyToManyField(Feature, blank=True)
+    def __str__(self):
+        return self.name
+
+
+
 
 class RoomEquipment(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    price=models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+
+
 
 
 class Reservation(models.Model):
@@ -75,6 +95,7 @@ class Reservation(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
+    number_of_attendees=models.CharField(max_length=50,default='')
 
 
 class ReservationHistory(models.Model):
@@ -87,5 +108,6 @@ class ReservationHistory(models.Model):
 
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    notes = models.TextField(blank=True, null=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-

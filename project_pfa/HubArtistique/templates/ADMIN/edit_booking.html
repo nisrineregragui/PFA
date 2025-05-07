@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Booking - HubArtistique</title>
+    <link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .booking-details {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .booking-details h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            width: 150px;
+            color: #555;
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        .edit-form {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        
+        .edit-form h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .status-badge.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .equipment-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <aside class="admin-sidebar">
+                <div class="sidebar-header">
+                    <div class="admin-logo">
+                        <a href="{% url 'dashboard' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <button id="sidebar-toggle" class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div class="admin-profile">
+                    <div class="profile-image">
+                        <img src="images/admin-avatar.jpg" alt="Admin">
+                    </div>
+                    <div class="profile-info">
+                        <h3>Admin User</h3>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+                <nav class="admin-nav">
+                    <ul>
+                        <li>
+                            <a href="{% url 'dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'rooms_admin' %}">
+                                <i class="fas fa-door-open"></i>
+                                <span>Rooms</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="{% url 'bookings' %}">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Bookings</span>
+                            </a>
+                        </li>
+                        <li >
+                            <a href="{% url 'users' %}">
+                                <i class="fas fa-users"></i>
+                                <span>Users</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-footer">
+                    <a href="{% url 'index' %}" title="View Website">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <a href="#" id="dark-mode-toggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </a>
+                    <a href="{% url 'login' %}" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </aside>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search bookings...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">3</span>
+                    </div>
+                    <div class="admin-dropdown">
+                        <button class="dropdown-toggle">
+                            <img src="images/admin-avatar.jpg" alt="Admin">
+                            <span>Admin User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="{% url 'login' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <h1>Edit Booking #{{ reservation.id }}</h1>
+                    <a href="{% url 'bookings' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Bookings
+                    </a>
+                </div>
+
+                <div class="booking-details">
+                    <h2>Current Booking Information</h2>
+                    <div class="detail-row">
+                        <div class="detail-label">User:</div>
+                        <div class="detail-value">{{ reservation.user.first_name }} {{ reservation.user.last_name }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Room:</div>
+                        <div class="detail-value">{{ reservation.room.name }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Current Status:</div>
+                        <div class="detail-value">
+                            <span class="status-badge {{ reservation.status }}">{{ reservation.status|title }}</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Total Price:</div>
+                        <div class="detail-value">{{ reservation.total_price }} MAD</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Room Equipment:</div>
+                        <div class="detail-value">
+                            <ul class="equipment-list">
+                                {% for equipment in reservation.room.additional_equipment.all %}
+                                <li>{{ equipment.name }}</li>
+                                {% empty %}
+                                <li>No additional equipment</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-form">
+                    <h2>Edit Booking Details</h2>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_date">Date:</label>
+                            <input type="date" name="date" id="id_date" class="form-control" 
+                                   value="{{ form.date.value|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_start_time">Start Time:</label>
+                            <input type="time" name="start_time" id="id_start_time" class="form-control" 
+                                   value="{{ form.start_time.value|time:'H:i' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_end_time">End Time:</label>
+                            <input type="time" name="end_time" id="id_end_time" class="form-control" 
+                                   value="{{ form.end_time.value|time:'H:i' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="number_of_attendees">Number of Attendees:</label>
+                            <select name="number_of_attendees" id="number_of_attendees" class="form-control" required>
+                                <option value="1-5" {% if reservation.number_of_attendees == "1-5" %}selected{% endif %}>1-5 people</option>
+                                <option value="6-10" {% if reservation.number_of_attendees == "6-10" %}selected{% endif %}>6-10 people</option>
+                                <option value="11-15" {% if reservation.number_of_attendees == "11-15" %}selected{% endif %}>11-15 people</option>
+                                <option value="16-20" {% if reservation.number_of_attendees == "16-20" %}selected{% endif %}>16-20 people</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'ADMIN/js/admin.js' %}"></script>
+</body>
+</html>

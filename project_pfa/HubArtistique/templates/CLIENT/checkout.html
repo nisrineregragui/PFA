@@ -1,0 +1,429 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Room Reservation System</title>
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .checkout-items {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .checkout-summary {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            align-self: start;
+        }
+        
+        .checkout-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .checkout-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .checkout-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkout-item-image {
+            width: 80px;
+            height: 60px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        
+        .checkout-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .checkout-item-details {
+            flex: 1;
+        }
+        
+        .checkout-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .checkout-item-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .checkout-item-price {
+            font-weight: 600;
+            margin-left: 15px;
+        }
+        
+        .checkout-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .checkout-summary-row.total {
+            font-weight: 600;
+            font-size: 1.2rem;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .checkout-form {
+            margin-top: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-method {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .payment-method:hover {
+            border-color: #aaa;
+        }
+        
+        .payment-method.active {
+            border-color: #3498db;
+            background-color: #f0f7fc;
+        }
+        
+        .payment-method i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .payment-method.active i {
+            color: #3498db;
+        }
+        
+        .checkout-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdecea;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            background-color: #eafaf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if request.session.cart %}
+                    <span class="cart-count">{{ request.session.cart|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Checkout</h1>
+            <div class="breadcrumbs">
+                <a href="{% url 'index' %}">Home</a> / <a href="{% url 'cart' %}">Cart</a> / <span>Checkout</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if cart_items %}
+            <div class="checkout-container">
+                <div class="checkout-items">
+                    <h2 class="checkout-title">Order Summary</h2>
+                    
+                    {% for item in cart_items %}
+                    <div class="checkout-item">
+                        <div class="checkout-item-image">
+                            {% if item.image_url %}
+                            <img src="{{ item.image_url }}" alt="{{ item.room_name }}">
+                            {% else %}
+                            <img src="{% static 'CLIENT/images/studio1.jpg' %}" alt="{{ item.room_name }}">
+                            {% endif %}
+                        </div>
+                        <div class="checkout-item-details">
+                            <div class="checkout-item-title">{{ item.room_name }}</div>
+                            <div class="checkout-item-info">
+                                {{ item.date }} | {{ item.start_time }} - {{ item.end_time }} | {{ item.attendees }}
+                            </div>
+                        </div>
+                        <div class="checkout-item-price">{{ item.total_price }}mad</div>
+                    </div>
+                    {% endfor %}
+                    
+                    <form method="post" action="{% url 'checkout' %}" class="checkout-form">
+                        {% csrf_token %}
+                        <div class="form-section">
+                            <div class="form-section-title">Reservation Notes</div>
+                            <div class="form-group">
+                                <label for="notes">Special Requests or Notes (Optional)</label>
+                                <textarea id="notes" name="notes" rows="4" placeholder="Any special requests or additional information for your reservation"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="form-section-title">Payment Method</div>
+                            <div class="payment-methods">
+                                <div class="payment-method active" data-method="cash">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <div>Pay at Venue</div>
+                                </div>
+                                <div class="payment-method" data-method="card">
+                                    <i class="fas fa-credit-card"></i>
+                                    <div>Credit Card</div>
+                                </div>
+                                <div class="payment-method" data-method="paypal">
+                                    <i class="fab fa-paypal"></i>
+                                    <div>PayPal</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="payment_method" id="payment_method" value="cash">
+                        </div>
+                        
+                        <div class="checkout-actions">
+                            <a href="{% url 'cart' %}" class="btn btn-outline">Back to Cart</a>
+                            <button type="submit" class="btn btn-primary">Complete Reservation</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="checkout-summary">
+                    <h3 class="checkout-title">Order Total</h3>
+                    <div class="checkout-summary-row">
+                        <span>Subtotal</span>
+                        <span>{{ total }}mad</span>
+                    </div>
+                    <div class="checkout-summary-row">
+                        <span>Service Fee</span>
+                        <span>0.00mad</span>
+                    </div>
+                    <div class="checkout-summary-row total">
+                        <span>Total</span>
+                        <span>{{ total }}mad</span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="cart-container">
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>You need to add rooms to your cart before checkout.</p>
+                    <a href="{% url 'rooms' %}" class="btn btn-primary">Browse Rooms</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <p>The easiest way to find your space to create :)</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                        <li><i class="fas fa-phone"></i> 000000000</li>
+                        <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const paymentMethodInput = document.getElementById('payment_method');
+            
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    // Remove active class from all methods
+                    paymentMethods.forEach(m => m.classList.remove('active'));
+                    
+                    // Add active class to clicked method
+                    this.classList.add('active');
+                    
+                    // Update hidden input
+                    paymentMethodInput.value = this.dataset.method;
+                });
+            });
+        });
+    </script>
+
+    <script src="{% static 'CLIENT/js/client.js' %}"></script>
+</body>
+</html>

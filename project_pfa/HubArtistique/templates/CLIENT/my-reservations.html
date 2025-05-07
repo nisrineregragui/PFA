@@ -1,0 +1,430 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reservations - Room Reservation System</title>
+    <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .reservations-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .reservations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .reservations-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .reservations-count {
+            background-color: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .reservation-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .reservation-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .reservation-tab.active {
+            border-bottom-color: #3498db;
+            color: #3498db;
+        }
+        
+        .reservation-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .reservation-id {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .reservation-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .reservation-status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .reservation-status.confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .reservation-status.cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .reservation-status.completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .reservation-body {
+            padding: 20px;
+            display: flex;
+        }
+        
+        .reservation-image {
+            width: 120px;
+            height: 80px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 20px;
+        }
+        
+        .reservation-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .reservation-details {
+            flex: 1;
+        }
+        
+        .reservation-room {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .reservation-type {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .reservation-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .reservation-info span {
+            font-size: 0.9rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+        
+        .reservation-info i {
+            margin-right: 5px;
+            color: #777;
+        }
+        
+        .reservation-price {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+        
+        .reservation-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .empty-reservations {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .empty-reservations i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-reservations h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .empty-reservations p {
+            color: #777;
+            margin-bottom: 25px;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdecea;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            background-color: #eafaf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="dark-mode-toggle" id="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if request.session.cart %}
+                    <span class="cart-count">{{ request.session.cart|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>My Reservations</h1>
+            <div class="breadcrumbs">
+                <a href="{% url 'index' %}">Home</a> / <span>My Reservations</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservations Section -->
+    <section class="reservations-section">
+        <div class="container">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="reservations-container">
+                <div class="reservations-header">
+                    <h2>Your Reservations</h2>
+                    <div class="reservations-count">{{ reservations|length }} reservation{% if reservations|length != 1 %}s{% endif %}</div>
+                </div>
+                
+                <div class="reservation-tabs">
+                    <div class="reservation-tab active" data-status="all">All</div>
+                    <div class="reservation-tab" data-status="pending">Pending</div>
+                    <div class="reservation-tab" data-status="confirmed">Confirmed</div>
+                    <div class="reservation-tab" data-status="completed">Completed</div>
+                    <div class="reservation-tab" data-status="cancelled">Cancelled</div>
+                </div>
+                
+                <div class="reservations-list">
+                    {% if reservations %}
+                        {% for reservation in reservations %}
+                        <div class="reservation-card" data-status="{{ reservation.status }}">
+                            <div class="reservation-header">
+                                <div class="reservation-id">Reservation #{{ reservation.id }}</div>
+                                <div class="reservation-status {{ reservation.status }}">
+                                    {{ reservation.status|title }}
+                                </div>
+                            </div>
+                            <div class="reservation-body">
+                                <div class="reservation-image">
+                                    {% if reservation.room.image %}
+                                    <img src="{{ reservation.room.image.url }}" alt="{{ reservation.room.name }}">
+                                    {% else %}
+                                    <img src="{% static 'CLIENT/images/studio1.jpg' %}" alt="{{ reservation.room.name }}">
+                                    {% endif %}
+                                </div>
+                                <div class="reservation-details">
+                                    <div class="reservation-room">{{ reservation.room.name }}</div>
+                                    <div class="reservation-type">{{ reservation.room.type }}</div>
+                                    <div class="reservation-info">
+                                        <span><i class="fas fa-calendar"></i> {{ reservation.date }}</span>
+                                        <span><i class="fas fa-clock"></i> {{ reservation.start_time }} - {{ reservation.end_time }}</span>
+                                        <span><i class="fas fa-users"></i> {{ reservation.number_of_attendees }}</span>
+                                    </div>
+                                    <div class="reservation-price">{{ reservation.total_price }}mad</div>
+                                </div>
+                            </div>
+                            <div class="reservation-actions">
+                                <a href="{% url 'room_details' reservation.room.id %}" class="btn btn-outline btn-sm">View Room</a>
+                                {% if reservation.status == 'pending' or reservation.status == 'confirmed' %}
+                                <a href="{% url 'cancel_reservation' reservation.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this reservation?')">Cancel</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="empty-reservations">
+                        <i class="fas fa-calendar-times"></i>
+                        <h3>No reservations found</h3>
+                        <p>You haven't made any reservations yet.</p>
+                        <a href="{% url 'rooms' %}" class="btn btn-primary">Browse Rooms</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
+                    </div>
+                    <p>The easiest way to find your space to create :)</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> Emsi MoulayYoussef</li>
+                        <li><i class="fas fa-phone"></i> 000000000</li>
+                        <li><i class="fas fa-envelope"></i> info@HubArtistique.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HubArtistique. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reservation tabs functionality
+            const tabs = document.querySelectorAll('.reservation-tab');
+            const reservationCards = document.querySelectorAll('.reservation-card');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    const status = this.dataset.status;
+                    
+                    // Show/hide reservation cards based on status
+                    reservationCards.forEach(card => {
+                        if (status === 'all' || card.dataset.status === status) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // Show empty message if no cards are visible
+                    const visibleCards = document.querySelectorAll('.reservation-card[style="display: block"]');
+                    const emptyMessage = document.querySelector('.empty-reservations');
+                    
+                    if (visibleCards.length === 0 && emptyMessage) {
+                        emptyMessage.style.display = 'block';
+                    } else if (emptyMessage) {
+                        emptyMessage.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script src="{% static 'CLIENT/js/client.js' %}"></script>
+</body>
+</html>

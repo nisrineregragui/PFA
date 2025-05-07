@@ -1,13 +1,115 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Conference Room A - Room Reservation System</title>
-    {% comment %} <link rel="stylesheet" href="css/client-style.css"> {% endcomment %}
+    <title>{{ room.name }} - Room Reservation System</title>
     <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdecea;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            background-color: #eafaf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .unavailable-time {
+            background-color: #ffecec;
+            color: #e74c3c;
+            padding: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .status-available {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .status-maintenance {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .status-unavailable {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .calendar-day.reserved {
+            background-color: #ffecec;
+            color: #e74c3c;
+            position: relative;
+        }
+        
+        .calendar-day.reserved::after {
+            content: "•";
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e74c3c;
+        }
+        
+        .calendar-day.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .time-slots {
+            margin-top: 15px;
+        }
+        
+        .time-slot {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .time-slot.unavailable {
+            background-color: #ffecec;
+            color: #e74c3c;
+        }
+        
+        .cart-icon {
+            position: relative;
+            margin-right: 15px;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+        }
+    </style>
 </head>
 <body>
      <!-- Header -->
@@ -18,8 +120,8 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li class="active"><a href="{% url 'index' %}">Home</a></li>
-                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li class="active"><a href="{% url 'rooms' %}">Rooms</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>
@@ -28,8 +130,19 @@
                 <div class="dark-mode-toggle" id="dark-mode-toggle">
                     <i class="fas fa-moon"></i>
                 </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if request.session.cart %}
+                    <span class="cart-count">{{ request.session.cart|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                {% else %}
                 <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
                 <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
                 <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -40,9 +153,9 @@
     <!-- Page Header -->
     <section class="page-header">
         <div class="container">
-            <h1>Executive Conference Room A</h1>
+            <h1>{{ room.name }}</h1>
             <div class="breadcrumbs">
-               <a href="{% url 'index' %}">Home</a> / <a href="{% url 'rooms' %}">Rooms</a> / <span>Executive Conference Room A</span>
+               <a href="{% url 'index' %}">Home</a> / <a href="{% url 'rooms' %}">Rooms</a> / <span>{{ room.name }}</span>
             </div>
         </div>
     </section>
@@ -50,129 +163,191 @@
     <!-- Room Details -->
     <section class="room-details">
         <div class="container">
+
+            <div class="messages">
+                
+               
+            </div>
+        
+            
             <div class="room-details-grid">
                 <div class="room-gallery">
                     <div class="main-image">
-                      <img src="{% static 'CLIENT/images/studio1.jpg' %}">
+                      {% if room.image %}
+                        <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                      {% else %}
+                        <img src="{% static 'CLIENT/images/studio1.jpg' %}" alt="{{ room.name }}">
+                      {% endif %}
                     </div>
                     <div class="gallery-thumbnails">
-                        <img src="{% static 'CLIENT/images/photopro.jpg' %}" class="active">
-                        <img src="{% static 'CLIENT/images/studio3.jpg' %}">
-                        <img src="{% static 'CLIENT/images/studio4.jpg' %}">
-                       <img src="{% static 'CLIENT/images/studio5.jpg' %}">
+                        {% if room.image %}
+                            <img src="{{ room.image.url }}" class="active" alt="{{ room.name }}">
+                        {% else %}
+                            <img src="{% static 'CLIENT/images/photopro.jpg' %}" class="active" alt="{{ room.name }}">
+                        {% endif %}
+                        
                     </div>
                 </div>
                 <div class="room-info">
                     <div class="room-header">
                         <div>
-                            <div class="room-type">Studio</div>
-                            <h2>Music Studio</h2>
+                            <div class="room-type">{{ room.type }}</div>
+                            <h2>{{ room.name }}</h2>
                         </div>
                         <div class="room-price-display">
-                            <div class="price">500</div>
+                            <div class="price">{{ room.hourly_rate }}mad</div>
                             <div class="per-night">per hour</div>
                         </div>
                     </div>
                     
                     <div class="room-description">
-                        <p>Our Music Studio is a professional-grade space designed to meet the needs of musicians, producers, and sound engineers. Whether you’re here for a solo recording session, a band rehearsal, or creating a new track, this studio offers everything you need to produce high-quality music. It features top-of-the-line equipment, including soundproofing for pristine acoustics, a wide variety of instruments, and the latest audio production tools.
+                        <p>{{ room.description }}</p>
+                        {% if room.building %}
+                        <p><strong>Building:</strong> {{ room.building.name }}</p>
+                        {% endif %}
+                        {% if room.floor %}
+                        <p><strong>Floor:</strong> {{ room.floor }}</p>
+                        {% endif %}
+                        {% if room.capacity %}
+                        <p><strong>Capacity:</strong> Up to {{ room.capacity }} people</p>
+                        {% endif %}
+                        <p><strong>Status:</strong> 
+                            {% if room.disponibility == 'dispo' %}
+                                <span class="status-available">Available</span>
+                            {% elif room.disponibility == 'maintenance' %}
+                                <span class="status-maintenance">Under Maintenance</span>
+                            {% else %}
+                                <span class="status-unavailable">Unavailable</span>
+                            {% endif %}
                         </p>
                     </div>
                     
                     <div class="room-features-list">
                         <h3>Room Features</h3>
                         <ul>
-                            <li><i class="fas fa-check"></i>Soundproofing</li>
-                            <li><i class="fas fa-check"></i> Neumann microphones, audio interfaces, MIDI keyboards
-                            </li>
-                            <li><i class="fas fa-check"></i>Electric and acoustic guitars, bass, drums, keyboards, and amplifiers f</li>
-                            <li><i class="fas fa-check"></i> High-definition video conferencing</li>
-                            <li><i class="fas fa-check"></i> Integrated sound system</li>
-                            <li><i class="fas fa-check"></i> High-speed Wi-Fi</li>
-                            <li><i class="fas fa-check"></i> Adjustable lighting</li>
-                            <li><i class="fas fa-check"></i> Climate control</li>
-                            <li><i class="fas fa-check"></i> Whiteboard and flip charts</li>
-                            <li><i class="fas fa-check"></i> Water and coffee service</li>
+                            {% for feature in room.features.all %}
+                                <li><i class="fas fa-check"></i> {{ feature.name }}</li>
+                            {% endfor %}
+                            
+                            {% if room.available_equipment.all %}
+                                <h4>Available Equipment</h4>
+                                {% for equipment in room.available_equipment.all %}
+                                    <li><i class="fas fa-check"></i> {{ equipment.name }}</li>
+                                {% endfor %}
+                            {% endif %}
                         </ul>
                     </div>
                     
+                    {% if room.disponibility == 'dispo' %}
                     <div class="booking-form">
                         <h3>Reserve This Room</h3>
-                        <form id="room-booking-form">
+                        <form id="room-booking-form" action="{% url 'room_details' room.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="booking-date">Date</label>
-                                    <input type="date" id="booking-date" required>
+                                    <input type="date" id="booking-date" name="booking-date" required min="{{ today|date:'Y-m-d' }}" 
+                                           {% if selected_date %}value="{{ selected_date }}"{% endif %}>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" formaction="{% url 'room_details' room.id %}?date={{ selected_date|default:'' }}" 
+                                            formmethod="get" class="btn btn-outline btn-sm">Check Availability</button>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="start-time">Start Time</label>
-                                    <input type="time" id="start-time" required>
+                                    <input type="time" id="start-time" name="start-time" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="end-time">End Time</label>
-                                    <input type="time" id="end-time" required>
+                                    <input type="time" id="end-time" name="end-time" required>
                                 </div>
                             </div>
+                            
+                            {% if time_slots %}
+                            <div class="time-slots">
+                                <h4>Reserved Time Slots for {{ selected_date }}</h4>
+                                <div class="time-slots-container">
+                                    {% if time_slots %}
+                                        {% for slot in time_slots %}
+                                        <div class="time-slot unavailable">
+                                            <span>{{ slot.start_time }} - {{ slot.end_time }}</span>
+                                            <span>Reserved</span>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>No reservations for this date. The room is fully available.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="attendees">Number of Attendees</label>
-                                    <select id="attendees" required>
+                                    <select id="attendees" name="attendees" required>
                                         <option value="1-5">1-5 People</option>
                                         <option value="6-10">6-10 People</option>
                                         <option value="11-15">11-15 People</option>
                                         <option value="16-20">16-20 People</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="purpose">Purpose of Reservation</label>
-                                    <select id="purpose" required>
-                                        <option value="meeting">Meeting</option>
-                                        <option value="presentation">Presentation</option>
-                                        <option value="training">Training</option>
-                                        <option value="interview">Interview</option>
-                                        <option value="other">Other</option>
+                                        {% if room.capacity > 20 %}
+                                        <option value="21+">21+ People</option>
+                                        {% endif %}
                                     </select>
                                 </div>
                             </div>
                             <div class="booking-summary">
                                 <div class="summary-row">
                                     <span>Room Rate</span>
-                                    <span>500 x <span id="hours-count">2</span> hours</span>
+                                    <span>{{ room.hourly_rate }} x <span id="hours-count">2</span> hours</span>
                                 </div>
                                 <div class="summary-row">
                                     <span>Equipment Fee</span>
-                                    <span id="equipment-fee">0.00</span>          
-                                    <!-- equipment-fee -->
+                                    <span id="equipment-fee">0.00</span>
                                 </div>
                                 <div class="summary-row total">
                                     <span>Total</span>
-                                    <span id="total-amount">100mad</span>
+                                    <span id="total-amount">{{ room.hourly_rate }}mad</span>
                                 </div>
-                                <!-- total-amount -->
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Additional Equipment</label>
                                     <div class="checkbox-group">
+                                        {% for equipment in room.additional_equipment.all %}
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="equipment" value="Professional Acoustics"> Professional Acoustics(+50mad/hour)
+                                            <input type="checkbox" name="equipment" value="{{ equipment.id }}"> 
+                                            {{ equipment.name }} 
+                                            {% for room_equipment in room.roomequipment_set.all %}
+                                                {% if room_equipment.equipment.id == equipment.id and room_equipment.price %}
+                                                    (+{{ room_equipment.price }}mad/hour)
+                                                {% endif %}
+                                            {% endfor %}
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="equipment" value="microphone"> Wireless Microphones (+50mad/hour)
-                                        </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="equipment" value="Live Recording Optionsvideoconf"> Live Recording Options (+150mad/hour)
-                                        </label>
+                                        {% endfor %}
+                                        {% if not room.additional_equipment.all %}
+                                        <p>No additional equipment available for this room.</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Reserve Now</button>
+                            <button type="submit" id="reserve-btn" class="btn btn-primary btn-block">Add to Cart</button>
                         </form>
                     </div>
+                    
+                    {% else %}
+                    <div class="unavailable-notice">
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {% if room.disponibility == 'maintenance' %}
+                            This room is currently under maintenance and not available for booking.
+                            {% else %}
+                            This room is currently unavailable for booking.
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             
@@ -181,11 +356,20 @@
                 <h3>Room Availability</h3>
                 <div class="calendar-container">
                     <div class="calendar-header">
-                        <button class="calendar-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
-                        <h4 id="calendar-month">April 2023</h4>
-                        <button class="calendar-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+                        <form method="get" action="{% url 'room_details' room.id %}">
+                            <input type="hidden" name="year" value="{{ calendar_data.year }}">
+                            <input type="hidden" name="month" value="{{ calendar_data.month|add:'-1' }}">
+                            <button type="submit" class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                        </form>
+                        <h4 id="calendar-month">{{ calendar_data.monthName }} {{ calendar_data.year }}</h4>
+                        <form method="get" action="{% url 'room_details' room.id %}">
+                            <input type="hidden" name="year" value="{{ calendar_data.year }}">
+                            <input type="hidden" name="month" value="{{ calendar_data.month|add:'1' }}">
+                            <button type="submit" class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                        </form>
                     </div>
-                    <div class="calendar-grid">
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar day headers -->
                         <div class="calendar-day-header">Sun</div>
                         <div class="calendar-day-header">Mon</div>
                         <div class="calendar-day-header">Tue</div>
@@ -194,49 +378,23 @@
                         <div class="calendar-day-header">Fri</div>
                         <div class="calendar-day-header">Sat</div>
                         
-                        <!-- Calendar days will be generated by JavaScript -->
-                        <div class="calendar-day disabled">26</div>
-                        <div class="calendar-day disabled">27</div>
-                        <div class="calendar-day disabled">28</div>
-                        <div class="calendar-day disabled">29</div>
-                        <div class="calendar-day disabled">30</div>
-                        <div class="calendar-day disabled">31</div>
-                        <div class="calendar-day">1</div>
-                        <div class="calendar-day">2</div>
-                        <div class="calendar-day">3</div>
-                        <div class="calendar-day">4</div>
-                        <div class="calendar-day">5</div>
-                        <div class="calendar-day busy">6</div>
-                        <div class="calendar-day busy">7</div>
-                        <div class="calendar-day">8</div>
-                        <div class="calendar-day">9</div>
-                        <div class="calendar-day">10</div>
-                        <div class="calendar-day">11</div>
-                        <div class="calendar-day busy">12</div>
-                        <div class="calendar-day">13</div>
-                        <div class="calendar-day">14</div>
-                        <div class="calendar-day">15</div>
-                        <div class="calendar-day">16</div>
-                        <div class="calendar-day busy">17</div>
-                        <div class="calendar-day busy">18</div>
-                        <div class="calendar-day">19</div>
-                        <div class="calendar-day">20</div>
-                        <div class="calendar-day">21</div>
-                        <div class="calendar-day">22</div>
-                        <div class="calendar-day">23</div>
-                        <div class="calendar-day">24</div>
-                        <div class="calendar-day">25</div>
-                        <div class="calendar-day">26</div>
-                        <div class="calendar-day">27</div>
-                        <div class="calendar-day">28</div>
-                        <div class="calendar-day">29</div>
-                        <div class="calendar-day">30</div>
-                        <div class="calendar-day disabled">1</div>
-                        <div class="calendar-day disabled">2</div>
-                        <div class="calendar-day disabled">3</div>
-                        <div class="calendar-day disabled">4</div>
-                        <div class="calendar-day disabled">5</div>
-                        <div class="calendar-day disabled">6</div>
+                        <!-- Empty cells for days before the first day of the month -->
+                        {% for i in calendar_data.firstWeekday|times %}
+                            <div class="calendar-day disabled"></div>
+                        {% endfor %}
+                        
+                        <!-- Days of the month -->
+                        {% for day in calendar_data.numDays|times_range:1 %}
+                            {% with day_str=day|stringformat:"02d" %}
+                                {% with month_str=calendar_data.month|stringformat:"02d" %}
+                                    {% with date_str=calendar_data.year|stringformat:"d"|add:"-"|add:month_str|add:"-"|add:day_str %}
+                                        <div class="calendar-day {% if date_str in calendar_data.reservedDates %}reserved{% endif %} {% if date_str == selected_date %}selected{% endif %}">
+                                            <a href="{% url 'room_details' room.id %}?date={{ date_str }}">{{ day }}</a>
+                                        </div>
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endwith %}
+                        {% endfor %}
                     </div>
                     <div class="calendar-legend">
                         <div class="legend-item">
@@ -245,7 +403,7 @@
                         </div>
                         <div class="legend-item">
                             <span class="legend-color busy"></span>
-                            <span>Fully Booked</span>
+                            <span>Has Reservations</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color selected"></span>
@@ -254,34 +412,45 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
             
-           
     <!-- Similar Rooms -->
     <section class="similar-rooms">
         <div class="container">
             <div class="section-header">
-                <h2>Similar Rooms</h2>
-                <p>You might also be interested in these rooms</p>
+                <h2>Similar {{ room.type }} Rooms</h2>
+                <p>You might also be interested in these rooms of the same type</p>
             </div>
             <div class="rooms-grid">
+                {% for similar_room in similar_rooms %}
                 <div class="room-card">
                     <div class="room-image">
-                        <img src="{% static 'CLIENT/images/studio3.jpg' %}">
-                        <div class="room-price">300mad<span>/hour</span></div>
+                        {% if similar_room.image %}
+                            <img src="{{ similar_room.image.url }}" alt="{{ similar_room.name }}">
+                        {% else %}
+                            <img src="{% static 'CLIENT/images/studio3.jpg' %}" alt="{{ similar_room.name }}">
+                        {% endif %}
+                        <div class="room-price">{{ similar_room.hourly_rate }}mad<span>/hour</span></div>
                     </div>
                     <div class="room-details">
-                        <div class="room-type">Studio</div>
-                        <h3>Studio type B</h3>
+                        <div class="room-type">{{ similar_room.type }}</div>
+                        <h3>{{ similar_room.name }}</h3>
                         <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 16 People</span>
-                            <span><i class="fas fa-tv"></i> Projector</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                            {% if similar_room.capacity %}
+                            <span><i class="fas fa-user"></i> Up to {{ similar_room.capacity }} People</span>
+                            {% endif %}
+                            {% for feature in similar_room.features.all|slice:":2" %}
+                            <span><i class="fas fa-check"></i> {{ feature.name }}</span>
+                            {% endfor %}
                         </div>
-                        <p>blablablabla</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                        <p>{{ similar_room.description|truncatechars:100 }}</p>
+                        <a href="{% url 'room_details' similar_room.id %}" class="btn btn-outline">View Details</a>
                     </div>
                 </div>
-                <!-- other rooms here -->
+                {% empty %}
+                <p>No other {{ room.type }} rooms available at the moment.</p>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -307,10 +476,10 @@
                 <ul>
                     <li><a href="{% url 'index' %}">Home</a></li>
                     <li><a href="{% url 'rooms' %}">Rooms</a></li>
-                    <li><a href="">About Us</a></li>
-                    <li><a href="">Contact</a></li>
-                    <li><a href="">Privacy Policy</a></li>
-                    <li><a href="">Terms & Conditions</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
             <div class="footer-column">
@@ -327,6 +496,36 @@
         </div>
     </div>
 </footer>
+
+<!-- Debug information - Remove in production -->
+<div style="margin-top: 50px; padding: 20px; background-color: #f8f9fa; border-radius: 5px; display: none;">
+    <h3>Debug Information</h3>
+    <p>Session Cart Items: {{ request.session.cart|length }}</p>
+    <pre>{{ request.session.cart|pprint }}</pre>
+</div>
+
 <script src="{% static 'CLIENT/js/client.js' %}"></script>
+<!-- Debug information - Remove in production -->
+<div style="margin-top: 50px; padding: 20px; background-color: #f8f9fa; border-radius: 5px; display: none;">
+    <h3>Debug Information</h3>
+    <p>Session Cart Items: {{ request.session.cart|length }}</p>
+    <pre>{{ request.session.cart|pprint }}</pre>
+</div>
+
+<!-- Set global variables for the room-details.js script -->
+<script>
+    window.roomHourlyRate = {{ room.hourly_rate }};
+    window.equipmentPrices = {
+        {% for room_equipment in room.roomequipment_set.all %}
+            {% if room_equipment.price %}
+                {{ room_equipment.equipment.id }}: {{ room_equipment.price }},
+            {% endif %}
+        {% endfor %}
+    };
+</script>
+
+<!-- Load room-details.js instead of client.js -->
+<script src="{% static 'CLIENT/js/room-details.js' %}"></script>
 </body>
 </html>
+
