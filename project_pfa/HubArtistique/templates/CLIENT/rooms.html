@@ -17,11 +17,11 @@
                 <a href="{% url 'index' %}">Hub<span>Artistique</span></a>
             </div>
             <nav class="main-nav">
-                <ul>
-                    <li><a href="{% url 'index' %}">Home</a></li>
-                    <li class="active"><a href="{% url 'rooms' %}">Rooms</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
+                 <ul>
+                    <li class="active"><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'rooms' %}">Rooms</a></li>
+                    <li><a href="#test">About & Contact</a></li>
+                    
                 </ul>
             </nav>
             <div class="header-actions">
@@ -29,8 +29,9 @@
                     <i class="fas fa-moon"></i>
                 </div>
                 {% if user.is_authenticated %}
+                    <a href="{% url 'cart' %}" class="fas fa-shopping-cart"></a>
                     <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
-                    <a href="{% url 'cart' %}" class="btn btn-primary">Cart</a>
+                    
                     <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
@@ -229,13 +230,7 @@
                                 <img src="{% static 'CLIENT/images/placeholder.jpg' %}">
                             {% endif %}
                             <div class="room-price">{{ room.hourly_rate }}mad<span>/hour</span></div>
-                            {% if room.disponibility == 'dispo' %}
-                                <div class="room-status available">Available</div>
-                            {% elif room.disponibility == 'maintenance' %}
-                                <div class="room-status maintenance">Maintenance</div>
-                            {% else %}
-                                <div class="room-status unavailable">Unavailable</div>
-                            {% endif %}
+                            
                         </div>
                         <div class="room-details">
                             <div class="room-type">{{ room.type }}</div>
@@ -313,8 +308,7 @@
                         <li><a href="{% url 'rooms' %}">Rooms</a></li>
                         <li><a href="">About Us</a></li>
                         <li><a href="">Contact</a></li>
-                        <li><a href="">Privacy Policy</a></li>
-                        <li><a href="">Terms & Conditions</a></li>
+                        
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -331,7 +325,6 @@
             </div>
         </div>
     </footer>
-
     <script src="{% static 'CLIENT/js/client.js' %}"></script>
     <script>
         // Filter tabs functionality

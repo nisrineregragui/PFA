@@ -233,5 +233,176 @@
     </div>
 
     <script src="{% static 'ADMIN/js/admin.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the image input field
+        const imageInput = document.getElementById('id_image');
+        
+        // Create image preview container
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'image-preview-container';
+        previewContainer.innerHTML = `
+            <h4>Image Preview</h4>
+            <div class="image-preview">
+                {% if room.image %}
+                <img src="{{ room.image.url }}" alt="{{ room.name }}" id="image-preview">
+                {% else %}
+                <div class="no-image">No image selected</div>
+                {% endif %}
+            </div>
+        `;
+        
+        // Insert preview after the image input
+        imageInput.parentNode.insertBefore(previewContainer, imageInput.nextSibling);
+        
+        // Update preview when a new image is selected
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewImg = document.getElementById('image-preview');
+                    if (previewImg) {
+                        previewImg.src = e.target.result;
+                    } else {
+                        const newImg = document.createElement('img');
+                        newImg.id = 'image-preview';
+                        newImg.src = e.target.result;
+                        newImg.alt = 'Room Preview';
+                        
+                        const noImage = document.querySelector('.no-image');
+                        if (noImage) {
+                            noImage.parentNode.replaceChild(newImg, noImage);
+                        } else {
+                            document.querySelector('.image-preview').appendChild(newImg);
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Add styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .image-preview-container {
+                margin: 15px 0;
+            }
+            
+            .image-preview {
+                width: 100%;
+                max-width: 300px;
+                height: 200px;
+                border: 1px dashed #ddd;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                background-color: #f9f9f9;
+            }
+            
+            .image-preview img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+            
+            .no-image {
+                color: #999;
+                font-style: italic;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add dynamic equipment selection
+        const availableEquipment = document.getElementById('id_available_equipment');
+        const additionalEquipment = document.getElementById('id_additional_equipment');
+        
+        if (availableEquipment && additionalEquipment) {
+            // Create equipment summary
+            const equipmentSummary = document.createElement('div');
+            equipmentSummary.className = 'equipment-summary';
+            equipmentSummary.innerHTML = '<h4>Selected Equipment Summary</h4><ul id="equipment-list"></ul>';
+            
+            // Insert summary after the additional equipment field
+            additionalEquipment.parentNode.insertBefore(equipmentSummary, additionalEquipment.nextSibling);
+            
+            // Function to update equipment summary
+            function updateEquipmentSummary() {
+                const equipmentList = document.getElementById('equipment-list');
+                equipmentList.innerHTML = '';
+                
+                // Get selected available equipment
+                for (const option of availableEquipment.options) {
+                    if (option.selected) {
+                        const li = document.createElement('li');
+                        li.textContent = option.textContent + ' (Available)';
+                        li.className = 'available';
+                        equipmentList.appendChild(li);
+                    }
+                }
+                
+                // Get selected additional equipment
+                for (const option of additionalEquipment.options) {
+                    if (option.selected) {
+                        const li = document.createElement('li');
+                        li.textContent = option.textContent + ' (Additional)';
+                        li.className = 'additional';
+                        equipmentList.appendChild(li);
+                    }
+                }
+                
+                // Show message if no equipment selected
+                if (equipmentList.children.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'No equipment selected';
+                    li.className = 'none';
+                    equipmentList.appendChild(li);
+                }
+            }
+            
+            // Add event listeners
+            availableEquipment.addEventListener('change', updateEquipmentSummary);
+            additionalEquipment.addEventListener('change', updateEquipmentSummary);
+            
+            // Add styles for equipment summary
+            style.textContent += `
+                .equipment-summary {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: #f9f9f9;
+                    border-radius: 5px;
+                }
+                
+                .equipment-summary h4 {
+                    margin-top: 0;
+                    margin-bottom: 10px;
+                }
+                
+                #equipment-list {
+                    margin: 0;
+                    padding-left: 20px;
+                }
+                
+                #equipment-list li.available {
+                    color: #4CAF50;
+                }
+                
+                #equipment-list li.additional {
+                    color: #2196F3;
+                }
+                
+                #equipment-list li.none {
+                    color: #999;
+                    font-style: italic;
+                }
+            `;
+            
+            // Initialize summary
+            updateEquipmentSummary();
+        }
+    });
+</script>
 </body>
 </html>

@@ -82,6 +82,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // IMPORTANT: Do NOT prevent form submission
-    // Let the form submit normally to the server
+  
 });
