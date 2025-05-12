@@ -14,13 +14,13 @@ import json
 from decimal import Decimal
 
 def index(request):
-    return render(request, 'CLIENT/index.html')
+    rooms = Room.objects.all()[:3]
+    return render(request, 'CLIENT/index.html',{'rooms':rooms})
 
 def room_details(request):
     return render(request, 'CLIENT/room-details.html')
 
-# def bookings(request):
-#     return render(request, 'ADMIN/bookings.html')
+
 
 def dashboard(request):
     return render(request, 'ADMIN/dashboard.html')

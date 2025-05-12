@@ -94,71 +94,31 @@
                 <h2>Featured Rooms</h2>
                 <p>Explore our most popular meeting and conference spaces</p>
             </div>
-            <div class="rooms-grid">
+             <div class="rooms-grid">
+                <!-- Room 1 -->
+                {% for room in rooms %}
                 <div class="room-card">
                     <div class="room-image">
-                       <img src="{% static 'CLIENT/images/photopro.jpg' %}" alt="Studio">
-
-                        <div class="room-price">150mad<span>/hour</span></div>
+                         <img src="{{ room.image.url }}">
+                        <div class="room-price">{{ room.hourly_rate }}mad<span>/hour</span></div>
                     </div>
                     <div class="room-details">
-                        <div class="room-type">Photography</div>
-                        <h3>Studio Photo Pro</h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 30 People</span>
-                            <span><i class="fas fa-tv"></i> White Background</span>
-                            <span><i class="fas fa-video"></i> 4K camera</span>
-                            <span><i class="fas fa-image"></i> Green Screen</span>
-                        </div>
-                        <p>A fully-equipped professional photography studio with a white backdrop, green screen for digital effects, softboxes, reflectors, and a 4K camera for high-quality shoots.</p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                        <div class="room-type">{{ room.type }}</div>
+                        <h3>{{ room.name }}</h3>
+                        {% comment %} <div class="room-features">
+                            <span><i class="fas fa-user"></i> Up to 20 People</span>
+                            <span><i class="fas fa-tv"></i> Projector</span>
+                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
+                        </div> {% endcomment %}
+                        <p>{{ room.description }}</p>
+                        <a href="{% url 'room_details' room.id %}" class="btn btn-outline">View Details</a>
                     </div>
                 </div>
-                <div class="room-card">
-                    <div class="room-image">
-                         <img src="{% static 'CLIENT/images/coworking.jpg' %}" alt="coworking">
-                        <div class="room-price">300mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Shared WorkSpace</div>
-                        <h3>Creative Coworking Space
-                        </h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 60 People</span>
-                            <span><i class="fas fa-chalkboard"></i> Whiteboard</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p>A collaborative workspace for creators, offering shared desks equipped for editing, writing, sound and video production, and digital artwork creation in a creative, flexible environment.
-                        </p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
-                    </div>
-                </div>
-                <div class="room-card">
-                    <div class="room-image">
-                         <img src="{% static 'CLIENT/images/podcast2.jpg' %}">
-                        <div class="room-price">400mad<span>/hour</span></div>
-                    </div>
-                    <div class="room-details">
-                        <div class="room-type">Audio Recording Studio
-                        </div>
-                        <h3>Podcast & Voice-over Studio
-                        </h3>
-                        <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 5 People</span>
-                            <span><i class="fas fa-music"></i> Soundproof walls
-                            </span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div>
-                        <p> A soundproofed space for podcast recording or voice-over work, with high-quality microphones and a mixing desk.
-                        </p>
-                        <a href="{% url 'room_details' %}" class="btn btn-outline">View Details</a>
+                
+                {% endfor %}
                     </div>
                 </div>
             </div>
-            <div class="view-all-container">
-                <a href="{% url 'rooms' %}" class="btn btn-primary">View All Rooms</a>
-            </div>
-        </div>
     </section>
 
     <!-- Room Types Section -->
@@ -323,19 +283,7 @@
     </section>
   
 
-    <!-- Newsletter -->
-    <section class="newsletter">
-        <div class="container">
-            <div class="newsletter-content">
-                <h2>Stay Updated</h2>
-                <p>Subscribe to receive notifications about new rooms and special offers</p>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Your Email Address">
-                    <button type="submit" class="btn btn-primary">Subscribe</button>
-                </form>
-            </div>
-        </div>
-    </section>
+
 
     <!-- Footer -->
     <footer class="site-footer">
