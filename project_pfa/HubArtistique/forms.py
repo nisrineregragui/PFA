@@ -1,5 +1,35 @@
 from django import forms
-from .models import Reservation, Room, Equipment,Feature, User
+from .models import Building, Reservation, Room, Equipment, Feature, User
+from django.utils import timezone
+
+class SearchForm(forms.Form):
+    building = forms.CharField(required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    start_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}))
+    end_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}))
+    capacity = forms.CharField(required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        
+        # Set min date to today
+        self.fields['date'].widget.attrs['min'] = timezone.now().date().strftime('%Y-%m-%d')
+        
+        # Set building choices
+        building_choices = [('', 'Any Building')]
+        for building in Building.objects.all():
+            building_choices.append((building.name, building.name))
+        self.fields['building'].widget.choices = building_choices
+        
+        # Set capacity choices
+        capacity_choices = [
+            ('', 'Any Capacity'),
+            ('1-5', '1-5 People'),
+            ('6-10', '6-10 People'),
+            ('11-20', '11-20 People'),
+            ('21+', '21+ People'),
+        ]
+        self.fields['capacity'].widget.choices = capacity_choices
 
 class RoomForm(forms.ModelForm):
     available_equipment = forms.ModelMultipleChoiceField(

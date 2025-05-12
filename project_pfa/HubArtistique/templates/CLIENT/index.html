@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Reservation System</title>
-    {% comment %} <link rel="stylesheet" href="css/client-style.css"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'CLIENT/css/client-style.css' %}">
+    <link rel="stylesheet" href="{% static 'CLIENT/css/filter-styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -28,8 +28,14 @@
                 <div class="dark-mode-toggle" id="dark-mode-toggle">
                     <i class="fas fa-moon"></i>
                 </div>
-                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-                <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'my_reservations' %}" class="btn btn-outline">My Reservations</a>
+                    <a href="{% url 'cart' %}" class="btn btn-primary">Cart</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                    <a href="{% url 'login' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
                 <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -41,46 +47,47 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Book the Best,Forget the Rest!</h1>
+                <h1>Book the Best, Forget the Rest!</h1>
                 <p>Where Every Event Find Its Perfect Place!</p>
                 <div class="search-box">
                     <div class="search-row">
-                        <div class="search-group">
-                            <label><i class="fas fa-building"></i> Building</label>
-                            <select>
-                                <option>Any Building</option>
-                                <option>The Creative Loft</option>
-                                <option>Studio Music Factory</option>
-                                <option>The Artistic Center</option>
-                                <option>Motion Lab</option>
-                                <option>Flow Move Center</option>
-                            </select>
-                        </div>
-                        <div class="search-group">
-                            <label><i class="fas fa-calendar-alt"></i> Date</label>
-                            <input type="date">
-                        </div>
-                        <div class="search-group">
-                            <label><i class="fas fa-clock"></i> Start Time</label>
-                            <input type="time">
-                        </div>
-                        <div class="search-group">
-                            <label><i class="fas fa-clock"></i> End Time</label>
-                            <input type="time">
-                        </div>
-                        <div class="search-group">
-                            <label><i class="fas fa-user"></i> Capacity</label>
-                            <select>
-                                <option>Any Capacity</option>
-                                <option>1-5 People</option>
-                                <option>6-10 People</option>
-                                <option>11-20 People</option>
-                                <option>21+ People</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary search-btn">
-                            <i class="fas fa-search"></i> Find Rooms
-                        </button>
+                        <form method="POST" action="{% url 'index' %}">
+                            {% csrf_token %}
+                            <div class="search-group">
+                                <label><i class="fas fa-building"></i> Building</label>
+                                <select name="building">
+                                    <option value="">Any Building</option>
+                                    {% for building in buildings %}
+                                        <option value="{{ building.name }}">{{ building.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="search-group">
+                                <label><i class="fas fa-calendar-alt"></i> Date</label>
+                                <input type="date" name="date" min="{{ today|date:'Y-m-d' }}">
+                            </div>
+                            <div class="search-group">
+                                <label><i class="fas fa-clock"></i> Start Time</label>
+                                <input type="time" name="start_time">
+                            </div>
+                            <div class="search-group">
+                                <label><i class="fas fa-clock"></i> End Time</label>
+                                <input type="time" name="end_time">
+                            </div>
+                            <div class="search-group">
+                                <label><i class="fas fa-user"></i> Capacity</label>
+                                <select name="capacity">
+                                    <option value="">Any Capacity</option>
+                                    <option value="1-5">1-5 People</option>
+                                    <option value="6-10">6-10 People</option>
+                                    <option value="11-20">11-20 People</option>
+                                    <option value="21+">21+ People</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary search-btn">
+                                <i class="fas fa-search"></i> Find Rooms
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -95,30 +102,34 @@
                 <p>Explore our most popular meeting and conference spaces</p>
             </div>
              <div class="rooms-grid">
-                <!-- Room 1 -->
                 {% for room in rooms %}
                 <div class="room-card">
                     <div class="room-image">
-                         <img src="{{ room.image.url }}">
+                        {% if room.image %}
+                            <img src="{{ room.image.url }}">
+                        {% else %}
+                            <img src="{% static 'CLIENT/images/placeholder.jpg' %}">
+                        {% endif %}
                         <div class="room-price">{{ room.hourly_rate }}mad<span>/hour</span></div>
                     </div>
                     <div class="room-details">
                         <div class="room-type">{{ room.type }}</div>
                         <h3>{{ room.name }}</h3>
-                        {% comment %} <div class="room-features">
-                            <span><i class="fas fa-user"></i> Up to 20 People</span>
-                            <span><i class="fas fa-tv"></i> Projector</span>
-                            <span><i class="fas fa-wifi"></i> High-Speed Wi-Fi</span>
-                        </div> {% endcomment %}
-                        <p>{{ room.description }}</p>
+                        <div class="room-features">
+                            {% if room.capacity %}
+                                <span><i class="fas fa-user"></i> Up to {{ room.capacity }} People</span>
+                            {% endif %}
+                            {% for feature in room.features.all|slice:":2" %}
+                                <span><i class="fas fa-check-circle"></i> {{ feature.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <p>{{ room.description|truncatechars:100 }}</p>
                         <a href="{% url 'room_details' room.id %}" class="btn btn-outline">View Details</a>
                     </div>
                 </div>
-                
                 {% endfor %}
-                    </div>
-                </div>
             </div>
+        </div>
     </section>
 
     <!-- Room Types Section -->
@@ -281,9 +292,6 @@
             </div>
         </div>
     </section>
-  
-
-
 
     <!-- Footer -->
     <footer class="site-footer">
@@ -327,8 +335,6 @@
         </div>
     </footer>
 
- 
-<script src="{% static 'CLIENT/js/client.js' %}"></script>
-
+    <script src="{% static 'CLIENT/js/client.js' %}"></script>
 </body>
 </html>

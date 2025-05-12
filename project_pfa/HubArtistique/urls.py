@@ -29,7 +29,4 @@ urlpatterns = [
     path('users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
     path('rooms/edit/<int:room_id>/', views.edit_room, name='edit_room'),
     path('rooms/delete/<int:room_id>/', views.delete_room, name='delete_room'),
-
-   
-    
 ]
