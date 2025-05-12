@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - HubArtistique</title>
-    {% comment %} <link rel="stylesheet" href="css/admin-style.css"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'ADMIN/css/admin-style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -23,11 +22,11 @@
             </div>
             <div class="admin-profile">
                 <div class="profile-image">
-                    <img src="images/admin-avatar.jpg" alt="Admin">
+                    <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
                 </div>
                 <div class="profile-info">
-                    <h3>Admin User</h3>
-                    <p>Administrator</p>
+                    <h3>{{ request.user.first_name|default:"Admin User" }}</h3>
+                    <p>{{ request.user.role|default:"Administrator"|title }}</p>
                 </div>
             </div>
             <nav class="admin-nav">
@@ -77,7 +76,7 @@
                 <a href="#" id="dark-mode-toggle" title="Toggle Dark Mode">
                     <i class="fas fa-moon"></i>
                 </a>
-                <a href="{% url 'login' %}" title="Logout">
+                <a href="{% url 'logout' %}" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
@@ -87,24 +86,26 @@
         <main class="admin-main">
             <header class="admin-header">
                 <div class="header-search">
-                    <input type="text" placeholder="Search...">
-                    <button><i class="fas fa-search"></i></button>
+                    <form action="{% url 'dashboard' %}" method="GET">
+                        <input type="text" name="search" placeholder="Search..." value="{{ search_query|default:'' }}">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
                 </div>
                 <div class="header-actions">
                     <div class="notification-bell">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-count">3</span>
+                        <span class="notification-count">{{ pending_reservations }}</span>
                     </div>
                     <div class="admin-dropdown">
                         <button class="dropdown-toggle">
-                            <img src="images/admin-avatar.jpg" alt="Admin">
-                            <span>Admin User</span>
+                            <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
+                            <span>{{ request.user.first_name|default:"Admin User" }}</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu">
                             <a href="#"><i class="fas fa-user"></i> Profile</a>
                             <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="{% url 'login' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
                         </div>
                     </div>
                 </div>
@@ -129,8 +130,11 @@
                         </div>
                         <div class="stat-info">
                             <h3>Total Bookings</h3>
-                            <p class="stat-number">248</p>
-                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 12% from last month</p>
+                            <p class="stat-number">{{ total_reservations }}</p>
+                            <p class="stat-change {% if booking_growth >= 0 %}positive{% else %}negative{% endif %}">
+                                <i class="fas fa-arrow-{% if booking_growth >= 0 %}up{% else %}down{% endif %}"></i> 
+                                {{ booking_growth|floatformat:0 }}% from last month
+                            </p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -139,8 +143,11 @@
                         </div>
                         <div class="stat-info">
                             <h3>Total Users</h3>
-                            <p class="stat-number">1,257</p>
-                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 8% from last month</p>
+                            <p class="stat-number">{{ total_users }}</p>
+                            <p class="stat-change {% if user_growth >= 0 %}positive{% else %}negative{% endif %}">
+                                <i class="fas fa-arrow-{% if user_growth >= 0 %}up{% else %}down{% endif %}"></i> 
+                                {{ user_growth|floatformat:0 }}% from last month
+                            </p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -149,8 +156,11 @@
                         </div>
                         <div class="stat-info">
                             <h3>Active Rooms</h3>
-                            <p class="stat-number">24</p>
-                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 4% from last month</p>
+                            <p class="stat-number">{{ active_rooms }}</p>
+                            <p class="stat-change {% if room_growth >= 0 %}positive{% else %}negative{% endif %}">
+                                <i class="fas fa-arrow-{% if room_growth >= 0 %}up{% else %}down{% endif %}"></i> 
+                                {{ room_growth|floatformat:0 }}% from last month
+                            </p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -159,8 +169,11 @@
                         </div>
                         <div class="stat-info">
                             <h3>Revenue</h3>
-                            <p class="stat-number">45,200 MAD</p>
-                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 15% from last month</p>
+                            <p class="stat-number">{{ total_revenue|floatformat:0 }} MAD</p>
+                            <p class="stat-change {% if revenue_growth >= 0 %}positive{% else %}negative{% endif %}">
+                <i class="fas fa-arrow-{% if revenue_growth >= 0 %}up{% else %}down{% endif %}"></i> 
+                {{ revenue_growth|floatformat:0 }}% from last month
+            </p>
                         </div>
                     </div>
                 </div>
@@ -211,106 +224,36 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for reservation in recent_reservations %}
                                 <tr>
-                                    <td>#BK1024</td>
+                                    <td>#{{ reservation.id }}</td>
                                     <td>
                                         <div class="user-info">
-                                            <img src="images/user1.jpg" alt="User">
-                                            <span>Ahmed Khalid</span>
+                                            {% if reservation.user.image %}
+                                                <img src="{{ reservation.user.image.url }}" alt="User">
+                                            {% else %}
+                                                <img src="{% static 'images/user-placeholder.jpg' %}" alt="User">
+                                            {% endif %}
+                                            <span>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</span>
                                         </div>
                                     </td>
-                                    <td>Studio Photo Pro</td>
-                                    <td>2023-04-15</td>
-                                    <td>14:00 - 16:00</td>
-                                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                                    <td>{{ reservation.room.name }}</td>
+                                    <td>{{ reservation.date }}</td>
+                                    <td>{{ reservation.start_time }} - {{ reservation.end_time }}</td>
+                                    <td><span class="status-badge {{ reservation.status }}">{{ reservation.status|title }}</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                                            <a href="{% url 'validate_booking' reservation.id %}" class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></a>
+                                            <a href="{% url 'edit_booking' reservation.id %}" class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></a>
+                                            <a href="{% url 'delete_booking' reservation.id %}" class="action-btn delete-btn" title="Delete" onclick="return confirm('Are you sure you want to delete this booking?');"><i class="fas fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
+                                {% empty %}
                                 <tr>
-                                    <td>#BK1023</td>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="images/user2.jpg" alt="User">
-                                            <span>Fatima Zahra</span>
-                                        </div>
-                                    </td>
-                                    <td>Podcast & Voice-over Studio</td>
-                                    <td>2023-04-14</td>
-                                    <td>10:00 - 12:00</td>
-                                    <td><span class="status-badge pending">Pending</span></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
+                                    <td colspan="7" class="text-center">No bookings found</td>
                                 </tr>
-                                <tr>
-                                    <td>#BK1022</td>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="images/user3.jpg" alt="User">
-                                            <span>Youssef Amrani</span>
-                                        </div>
-                                    </td>
-                                    <td>Creative Coworking Space</td>
-                                    <td>2023-04-14</td>
-                                    <td>09:00 - 17:00</td>
-                                    <td><span class="status-badge confirmed">Confirmed</span></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#BK1021</td>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="images/user4.jpg" alt="User">
-                                            <span>Laila Bensouda</span>
-                                        </div>
-                                    </td>
-                                    <td>Wellness / Massage Room</td>
-                                    <td>2023-04-13</td>
-                                    <td>15:00 - 17:00</td>
-                                    <td><span class="status-badge cancelled">Cancelled</span></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#BK1020</td>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="images/user5.jpg" alt="User">
-                                            <span>Karim Tazi</span>
-                                        </div>
-                                    </td>
-                                    <td>Music Studio</td>
-                                    <td>2023-04-12</td>
-                                    <td>18:00 - 22:00</td>
-                                    <td><span class="status-badge confirmed">Confirmed</span></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn view-btn" title="View"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -325,39 +268,27 @@
                             <a href="{% url 'rooms_admin' %}" class="view-all">View All</a>
                         </div>
                         <div class="rooms-list">
+                            {% for room in popular_rooms %}
                             <div class="room-item">
-                                <img src="images/photopro.jpg" alt="Studio Photo Pro">
+                                {% if room.image %}
+                                    <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/room-placeholder.jpg' %}" alt="{{ room.name }}">
+                                {% endif %}
                                 <div class="room-details">
-                                    <h3>Studio Photo Pro</h3>
-                                    <p>Photography</p>
+                                    <h3>{{ room.name }}</h3>
+                                    <p>{{ room.type }}</p>
                                     <div class="room-stats">
-                                        <span><i class="fas fa-calendar-check"></i> 42 bookings</span>
+                                        <span><i class="fas fa-calendar-check"></i> {{ room.booking_count }} bookings</span>
                                         <span><i class="fas fa-star"></i> 4.8/5</span>
                                     </div>
                                 </div>
                             </div>
+                            {% empty %}
                             <div class="room-item">
-                                <img src="images/podcast2.jpg" alt="Podcast Studio">
-                                <div class="room-details">
-                                    <h3>Podcast & Voice-over Studio</h3>
-                                    <p>Audio Recording Studio</p>
-                                    <div class="room-stats">
-                                        <span><i class="fas fa-calendar-check"></i> 38 bookings</span>
-                                        <span><i class="fas fa-star"></i> 4.7/5</span>
-                                    </div>
-                                </div>
+                                <p>No popular rooms found</p>
                             </div>
-                            <div class="room-item">
-                                <img src="images/coworking.jpg" alt="Coworking Space">
-                                <div class="room-details">
-                                    <h3>Creative Coworking Space</h3>
-                                    <p>Shared WorkSpace</p>
-                                    <div class="room-stats">
-                                        <span><i class="fas fa-calendar-check"></i> 35 bookings</span>
-                                        <span><i class="fas fa-star"></i> 4.6/5</span>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
 
@@ -368,56 +299,36 @@
                             <a href="#" class="view-all">View All</a>
                         </div>
                         <div class="activities-list">
+                            {% for activity in recent_activities %}
                             <div class="activity-item">
-                                <div class="activity-icon" style="background-color: rgba(114, 92, 193, 0.2);">
-                                    <i class="fas fa-user-plus" style="color: #725cc1;"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p><strong>New user registered</strong></p>
-                                    <p>Nadia El Fassi created an account</p>
-                                    <p class="activity-time">2 hours ago</p>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon" style="background-color: rgba(52, 195, 143, 0.2);">
-                                    <i class="fas fa-calendar-plus" style="color: #34c38f;"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p><strong>New booking created</strong></p>
-                                    <p>Ahmed Khalid booked Studio Photo Pro</p>
-                                    <p class="activity-time">3 hours ago</p>
-                                </div>
-                            </div>
-                            <div class="activity-item">
+                                {% if activity.status == 'pending' %}
                                 <div class="activity-icon" style="background-color: rgba(241, 180, 76, 0.2);">
-                                    <i class="fas fa-edit" style="color: #f1b44c;"></i>
+                                    <i class="fas fa-clock" style="color: #f1b44c;"></i>
                                 </div>
-                                <div class="activity-details">
-                                    <p><strong>Room updated</strong></p>
-                                    <p>Music Studio details were updated</p>
-                                    <p class="activity-time">5 hours ago</p>
+                                {% elif activity.status == 'confirmed' %}
+                                <div class="activity-icon" style="background-color: rgba(52, 195, 143, 0.2);">
+                                    <i class="fas fa-check-circle" style="color: #34c38f;"></i>
                                 </div>
-                            </div>
-                            <div class="activity-item">
+                                {% elif activity.status == 'cancelled' %}
                                 <div class="activity-icon" style="background-color: rgba(244, 106, 106, 0.2);">
                                     <i class="fas fa-times-circle" style="color: #f46a6a;"></i>
                                 </div>
+                                {% else %}
+                                <div class="activity-icon" style="background-color: rgba(114, 92, 193, 0.2);">
+                                    <i class="fas fa-info-circle" style="color: #725cc1;"></i>
+                                </div>
+                                {% endif %}
                                 <div class="activity-details">
-                                    <p><strong>Booking cancelled</strong></p>
-                                    <p>Laila Bensouda cancelled her booking</p>
-                                    <p class="activity-time">1 day ago</p>
+                                    <p><strong>{{ activity.status|title }} booking</strong></p>
+                                    <p>{{ activity.reservation.user.first_name }} {{ activity.reservation.user.last_name }} - {{ activity.reservation.room.name }}</p>
+                                    <p class="activity-time">{{ activity.updated_at|timesince }} ago</p>
                                 </div>
                             </div>
+                            {% empty %}
                             <div class="activity-item">
-                                <div class="activity-icon" style="background-color: rgba(80, 165, 241, 0.2);">
-                                    <i class="fas fa-check-circle" style="color: #50a5f1;"></i>
-                                </div>
-                                <div class="activity-details">
-                                    <p><strong>Booking confirmed</strong></p>
-                                    <p>Youssef Amrani's booking was confirmed</p>
-                                    <p class="activity-time">1 day ago</p>
-                                </div>
+                                <p>No recent activities found</p>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -427,8 +338,83 @@
 
     <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   {% load static %}
-<script src="{% static 'ADMIN/js/admin.js' %}"></script>
+    <script>
+        // Booking Statistics Chart
+        document.addEventListener('DOMContentLoaded', function() {
+            // Booking Statistics Chart
+            const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+            const bookingChart = new Chart(bookingCtx, {
+                type: 'line',
+                data: {
+                    labels: [{% for item in monthly_bookings %}'{{ item.month }}',{% endfor %}],
+                    datasets: [{
+                        label: 'Bookings',
+                        data: [{% for item in monthly_bookings %}{{ item.count }},{% endfor %}],
+                        backgroundColor: 'rgba(114, 92, 193, 0.2)',
+                        borderColor: 'rgba(114, 92, 193, 1)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
 
+            // Room Popularity Chart
+            const roomCtx = document.getElementById('roomChart').getContext('2d');
+            const roomChart = new Chart(roomCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [{% for item in room_types %}'{{ item.type }}',{% endfor %}],
+                    datasets: [{
+                        data: [{% for item in room_types %}{{ item.count }},{% endfor %}],
+                        backgroundColor: [
+                            'rgba(114, 92, 193, 0.8)',
+                            'rgba(52, 195, 143, 0.8)',
+                            'rgba(241, 180, 76, 0.8)',
+                            'rgba(80, 165, 241, 0.8)',
+                            'rgba(244, 106, 106, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+    </script>
+    <script src="{% static 'ADMIN/js/admin.js' %}"></script>
 </body>
 </html>
