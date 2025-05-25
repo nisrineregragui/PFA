@@ -283,7 +283,7 @@ ul {
 }
 
 .search-group label {
-    color: var(--text-muted);
+    color: white;
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
     display: flex;

@@ -17,7 +17,6 @@ from decimal import Decimal
 def index(request):
     # Get search form
     search_form = SearchForm()
-    
     # Get featured rooms
     rooms = Room.objects.filter(disponibility='dispo').order_by('-hourly_rate')[:3]
     
@@ -229,7 +228,6 @@ def dashboard(request):
     return render(request, 'ADMIN/dashboard.html', context)
 
 def rooms_admin(request):
-    # Handle search query
     search_query = request.GET.get('search', '')
     
     if search_query:
@@ -261,7 +259,7 @@ def rooms_admin(request):
             rooms = rooms.filter(disponibility='no')
     
     # Pagination
-    paginator = Paginator(rooms, 10)  # Show 10 rooms per page
+    paginator = Paginator(rooms, 10)  
     page_number = request.GET.get('page', 1)
     rooms_page = paginator.get_page(page_number)
     
@@ -336,12 +334,10 @@ def signup_view(request):
     return render(request, 'login.html')
 
 def logout_view(request):
-    """Handle user logout"""
     logout(request)
     return redirect('login')
 
 def users(request):
-    # Handle search query
     search_query = request.GET.get('search', '')
     
     if search_query:
@@ -396,13 +392,13 @@ def add_room(request):
     if request.method == 'POST':
         form = RoomForm(request.POST, request.FILES)
         if form.is_valid():
-            room = form.save(commit=False)  # Do not save yet, as we need to handle m2m fields
-            room.save()  # Save the Room object first
+            room = form.save(commit=False) 
+            room.save()  
 
-            # Now, save the many-to-many related fields (assuming these are m2m fields)
-            form.save_m2m()  # This saves the m2m relationships, like equipment
+           
+            form.save_m2m()  
 
-            return redirect('rooms_admin')  # Redirect after successful form submission
+            return redirect('rooms_admin')  
         else:
             print(form.errors)  # For debugging purposes, check the form errors
     else:
@@ -411,10 +407,7 @@ def add_room(request):
     return render(request, 'ADMIN/rooms.html', {'form': form})
 
 def rooms(request):
-    # Get all rooms initially
     rooms = Room.objects.all()
-    
-    # Get all buildings, features, and room types for filters
     buildings = Building.objects.all()
     features = Feature.objects.all()
     room_types = Room.objects.values_list('type', flat=True).distinct()
@@ -493,7 +486,7 @@ def rooms(request):
         rooms = rooms.filter(id__in=available_room_ids)
     
     # Pagination
-    paginator = Paginator(rooms, 6)  # Show 6 rooms per page
+    paginator = Paginator(rooms, 6)  
     page_number = request.GET.get('page', 1)
     rooms_page = paginator.get_page(page_number)
     
@@ -515,11 +508,9 @@ def rooms(request):
     return render(request, 'CLIENT/rooms.html', context)
 
 def check_room_availability(room_id, date_str, start_time_str, end_time_str):
-    """Check if a room is available for a specific date and time range"""
     try:
         room = Room.objects.get(id=room_id)
         
-        # Check if room is available (not in maintenance or unavailable)
         if room.disponibility != 'dispo':
             return False, "Room is currently not available for booking."
         
@@ -1015,8 +1006,8 @@ def edit_cart_item(request, item_index):
                 messages.success(request, f"{room.name} has been updated in your cart.")
                 return redirect('cart')
             
-            # Get all equipment for the room
-            all_equipment = room.additional_equipment.all()
+            # # Get all equipment for the room
+            # all_equipment = room.additional_equipment.all()
             
             # Get selected equipment IDs
             selected_equipment_ids = [

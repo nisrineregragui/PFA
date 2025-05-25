@@ -262,7 +262,7 @@
     <!-- Checkout Section -->
     <section class="checkout-section">
         <div class="container">
-            {% if messages %}
+            {% comment %} {% if messages %}
             <div class="messages">
                 {% for message in messages %}
                 <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
@@ -270,7 +270,7 @@
                 </div>
                 {% endfor %}
             </div>
-            {% endif %}
+            {% endif %} {% endcomment %}
             
             {% if cart_items %}
             <div class="checkout-container">
@@ -280,11 +280,9 @@
                     {% for item in cart_items %}
                     <div class="checkout-item">
                         <div class="checkout-item-image">
-                            {% if item.image_url %}
-                            <img src="{{ item.image_url }}" alt="{{ item.room_name }}">
-                            {% else %}
-                            <img src="{% static 'CLIENT/images/studio1.jpg' %}" alt="{{ item.room_name }}">
-                            {% endif %}
+                           
+                            <img src="{{item.room.image.url}}" alt="{{ item.room.name }}">
+                            
                         </div>
                         <div class="checkout-item-details">
                             <div class="checkout-item-title">{{ item.room_name }}</div>

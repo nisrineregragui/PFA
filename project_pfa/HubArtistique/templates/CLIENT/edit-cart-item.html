@@ -174,7 +174,7 @@
     <!-- Edit Cart Item Section -->
     <section class="edit-cart-section">
         <div class="container">
-            {% if messages %}
+            {% comment %} {% if messages %}
             <div class="messages">
                 {% for message in messages %}
                 <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
@@ -182,7 +182,7 @@
                 </div>
                 {% endfor %}
             </div>
-            {% endif %}
+            {% endif %} {% endcomment %}
             
             <div class="edit-cart-container">
                 <h2 class="edit-cart-title">Edit Reservation for {{ room.name }}</h2>

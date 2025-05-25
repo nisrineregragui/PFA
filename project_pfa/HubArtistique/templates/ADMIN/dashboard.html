@@ -20,15 +20,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
-            <div class="admin-profile">
-                <div class="profile-image">
-                    <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
-                </div>
-                <div class="profile-info">
-                    <h3>{{ request.user.first_name|default:"Admin User" }}</h3>
-                    <p>{{ request.user.role|default:"Administrator"|title }}</p>
-                </div>
-            </div>
+            
             <nav class="admin-nav">
                 <ul>
                     <li class="active">
@@ -55,18 +47,7 @@
                             <span>Users</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
+                    
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -84,43 +65,10 @@
 
         <!-- Main Content -->
         <main class="admin-main">
-            <header class="admin-header">
-                <div class="header-search">
-                    <form action="{% url 'dashboard' %}" method="GET">
-                        <input type="text" name="search" placeholder="Search..." value="{{ search_query|default:'' }}">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                </div>
-                <div class="header-actions">
-                    <div class="notification-bell">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-count">{{ pending_reservations }}</span>
-                    </div>
-                    <div class="admin-dropdown">
-                        <button class="dropdown-toggle">
-                            <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
-                            <span>{{ request.user.first_name|default:"Admin User" }}</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="#"><i class="fas fa-user"></i> Profile</a>
-                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            
 
             <div class="admin-content">
-                <div class="page-header">
-                    <h1>Dashboard</h1>
-                    <div class="date-picker">
-                        <button class="date-btn active">Today</button>
-                        <button class="date-btn">Week</button>
-                        <button class="date-btn">Month</button>
-                        <button class="date-btn">Year</button>
-                    </div>
-                </div>
+                
 
                 <!-- Stats Cards -->
                 <div class="stats-grid">
@@ -131,10 +79,10 @@
                         <div class="stat-info">
                             <h3>Total Bookings</h3>
                             <p class="stat-number">{{ total_reservations }}</p>
-                            <p class="stat-change {% if booking_growth >= 0 %}positive{% else %}negative{% endif %}">
+                            {% comment %} <p class="stat-change {% if booking_growth >= 0 %}positive{% else %}negative{% endif %}">
                                 <i class="fas fa-arrow-{% if booking_growth >= 0 %}up{% else %}down{% endif %}"></i> 
                                 {{ booking_growth|floatformat:0 }}% from last month
-                            </p>
+                            </p> {% endcomment %}
                         </div>
                     </div>
                     <div class="stat-card">
@@ -144,10 +92,10 @@
                         <div class="stat-info">
                             <h3>Total Users</h3>
                             <p class="stat-number">{{ total_users }}</p>
-                            <p class="stat-change {% if user_growth >= 0 %}positive{% else %}negative{% endif %}">
+                            {% comment %} <p class="stat-change {% if user_growth >= 0 %}positive{% else %}negative{% endif %}">
                                 <i class="fas fa-arrow-{% if user_growth >= 0 %}up{% else %}down{% endif %}"></i> 
                                 {{ user_growth|floatformat:0 }}% from last month
-                            </p>
+                            </p> {% endcomment %}
                         </div>
                     </div>
                     <div class="stat-card">
@@ -157,10 +105,10 @@
                         <div class="stat-info">
                             <h3>Active Rooms</h3>
                             <p class="stat-number">{{ active_rooms }}</p>
-                            <p class="stat-change {% if room_growth >= 0 %}positive{% else %}negative{% endif %}">
+                            {% comment %} <p class="stat-change {% if room_growth >= 0 %}positive{% else %}negative{% endif %}">
                                 <i class="fas fa-arrow-{% if room_growth >= 0 %}up{% else %}down{% endif %}"></i> 
                                 {{ room_growth|floatformat:0 }}% from last month
-                            </p>
+                            </p> {% endcomment %}
                         </div>
                     </div>
                     <div class="stat-card">
@@ -170,10 +118,10 @@
                         <div class="stat-info">
                             <h3>Revenue</h3>
                             <p class="stat-number">{{ total_revenue|floatformat:0 }} MAD</p>
-                            <p class="stat-change {% if revenue_growth >= 0 %}positive{% else %}negative{% endif %}">
+                            {% comment %} <p class="stat-change {% if revenue_growth >= 0 %}positive{% else %}negative{% endif %}">
                 <i class="fas fa-arrow-{% if revenue_growth >= 0 %}up{% else %}down{% endif %}"></i> 
                 {{ revenue_growth|floatformat:0 }}% from last month
-            </p>
+            </p> {% endcomment %}
                         </div>
                     </div>
                 </div>
@@ -226,14 +174,10 @@
                             <tbody>
                                 {% for reservation in recent_reservations %}
                                 <tr>
-                                    <td>#{{ reservation.id }}</td>
+                                    <td>{{ reservation.id }}</td>
                                     <td>
                                         <div class="user-info">
-                                            {% if reservation.user.image %}
-                                                <img src="{{ reservation.user.image.url }}" alt="User">
-                                            {% else %}
-                                                <img src="{% static 'images/user-placeholder.jpg' %}" alt="User">
-                                            {% endif %}
+                                        
                                             <span>{{ reservation.user.first_name }} {{ reservation.user.last_name }}</span>
                                         </div>
                                     </td>
@@ -262,7 +206,7 @@
                 <!-- Bottom Row -->
                 <div class="bottom-row">
                     <!-- Popular Rooms -->
-                    <div class="popular-rooms">
+                    {% comment %} <div class="popular-rooms">
                         <div class="section-header">
                             <h2>Popular Rooms</h2>
                             <a href="{% url 'rooms_admin' %}" class="view-all">View All</a>
@@ -289,14 +233,14 @@
                                 <p>No popular rooms found</p>
                             </div>
                             {% endfor %}
-                        </div>
-                    </div>
+                        </div> {% endcomment %}
+                    {% comment %} </div> {% endcomment %}
 
                     <!-- Recent Activities -->
                     <div class="recent-activities">
                         <div class="section-header">
                             <h2>Recent Activities</h2>
-                            <a href="#" class="view-all">View All</a>
+                            
                         </div>
                         <div class="activities-list">
                             {% for activity in recent_activities %}
@@ -336,7 +280,7 @@
         </main>
     </div>
 
-    <!-- Chart.js for charts -->
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Booking Statistics Chart

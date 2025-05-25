@@ -58,7 +58,6 @@ class Room(models.Model):
     hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     available_equipment = models.ManyToManyField(Equipment,related_name='rooms_with_available_equipment', blank=True)
     image = models.ImageField(upload_to='room_images/', null=True, blank=True)
-    additional_equipment = models.ManyToManyField(Equipment, related_name='rooms_with_additional_equipment', blank=True)
     disponibility = models.CharField(
         max_length=15,
         choices=DISPONIBILITY_CHOICES,

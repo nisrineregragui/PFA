@@ -249,10 +249,10 @@
                                     <input type="date" id="booking-date" name="booking-date" required min="{{ today|date:'Y-m-d' }}" 
                                            {% if selected_date %}value="{{ selected_date }}"{% endif %}>
                                 </div>
-                                <div class="form-group">
+                                {% comment %} <div class="form-group">
                                     <button type="submit" formaction="{% url 'room_details' room.id %}?date={{ selected_date|default:'' }}" 
                                             formmethod="get" class="btn btn-outline btn-sm">Check Availability</button>
-                                </div>
+                                </div> {% endcomment %}
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -302,16 +302,16 @@
                                     <span>Room Rate</span>
                                     <span>{{ room.hourly_rate }} x <span id="hours-count">2</span> hours</span>
                                 </div>
-                                <div class="summary-row">
+                                {% comment %} <div class="summary-row">
                                     <span>Equipment Fee</span>
                                     <span id="equipment-fee">0.00</span>
-                                </div>
+                                </div> {% endcomment %}
                                 <div class="summary-row total">
                                     <span>Total</span>
                                     <span id="total-amount">{{ room.hourly_rate }}mad</span>
                                 </div>
                             </div>
-                            <div class="form-row">
+                            {% comment %} <div class="form-row">
                                 <div class="form-group">
                                     <label>Additional Equipment</label>
                                     <div class="checkbox-group">
@@ -331,7 +331,7 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>
+                            </div> {% endcomment %}
                             <button type="submit" id="reserve-btn" class="btn btn-primary btn-block">Add to Cart</button>
                         </form>
                     </div>

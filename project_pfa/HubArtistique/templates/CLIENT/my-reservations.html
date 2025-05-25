@@ -270,7 +270,7 @@
     <!-- Reservations Section -->
     <section class="reservations-section">
         <div class="container">
-            {% if messages %}
+            {% comment %} {% if messages %}
             <div class="messages">
                 {% for message in messages %}
                 <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
@@ -278,7 +278,7 @@
                 </div>
                 {% endfor %}
             </div>
-            {% endif %}
+            {% endif %} {% endcomment %}
             
             <div class="reservations-container">
                 <div class="reservations-header">

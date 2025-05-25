@@ -181,15 +181,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
-            <div class="admin-profile">
-                <div class="profile-image">
-                    <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
-                </div>
-                <div class="profile-info">
-                    <h3>Admin User</h3>
-                    <p>Administrator</p>
-                </div>
-            </div>
+            
             <nav class="admin-nav">
                 <ul>
                     <li>
@@ -216,18 +208,7 @@
                             <span>Users</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
+                   
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -245,30 +226,7 @@
 
         <!-- Main Content -->
         <main class="admin-main">
-            <header class="admin-header">
-                <div class="header-search">
-                    <input type="text" placeholder="Search rooms...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
-                <div class="header-actions">
-                    <div class="notification-bell">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-count">3</span>
-                    </div>
-                    <div class="admin-dropdown">
-                        <button class="dropdown-toggle">
-                            <img src="{% static 'images/admin-avatar.jpg' %}" alt="Admin">
-                            <span>Admin User</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="#"><i class="fas fa-user"></i> Profile</a>
-                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            
 
             <div class="admin-content">
                 <div class="page-header">
@@ -279,18 +237,96 @@
                 </div>
                 
                <!-- Popup Form -->
+<!-- Popup Form -->
 <div id="popupForm" style="display:none;">
     <form method="POST" enctype="multipart/form-data" action="{% url 'add_room' %}">
         <h2>Add New Room</h2>
         {% csrf_token %}
-        {{ form.as_p }}
         
-        <button type="submit" class="btn btn-success">Save Room</button>
-        <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancel</button>
+        <!-- Basic Info Section -->
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Room Name</label>
+            {{ form.name }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.type.id_for_label }}">Room Type</label>
+            {{ form.type }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.building.id_for_label }}">Building</label>
+            {{ form.building }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.capacity.id_for_label }}">Capacity</label>
+            {{ form.capacity }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.hourly_rate.id_for_label }}">Hourly Rate (MAD)</label>
+            {{ form.hourly_rate }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.disponibility.id_for_label }}">Status</label>
+            {{ form.disponibility }}
+        </div>
+        
+        <!-- Description -->
+        <div class="form-row-wide">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+        </div>
+        
+        <!-- Image Upload -->
+        <div class="form-row-wide">
+            <label for="{{ form.image.id_for_label }}">Room Image</label>
+            {{ form.image }}
+        </div>
+        
+        <!-- Equipment Section -->
+        <div class="form-row-wide">
+            <label>Available Equipment</label>
+            <div class="equipment-selector">
+                {% for checkbox in form.available_equipment %}
+                <div class="equipment-option">
+                    <label class="checkbox-label">
+                        {{ checkbox.tag }}
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">{{ checkbox.choice_label }}</span>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="form-row-wide">
+            <label>Room Features</label>
+            <div class="features-selector">
+                {% for checkbox in form.features %}
+                <div class="feature-option">
+                    <label class="checkbox-label">
+                        {{ checkbox.tag }}
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">{{ checkbox.choice_label }}</span>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Save Room</button>
+            <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancel</button>
+        </div>
     </form>
 </div>
 
-                <!-- Filters -->
+                {% comment %} <!-- Filters -->
                 <div class="filters-container">
                     <div class="filter-group">
                         <label>Room Type</label>
@@ -315,8 +351,8 @@
                             <option value="motionLab">Motion Lab</option>
                             <option value="flowMoveCenter">Flow Move Center</option>
                         </select>
-                    </div>
-                    <div class="filter-group">
+                    </div> {% endcomment %}
+                    {% comment %} <div class="filter-group">
                         <label>Status</label>
                         <select id="filter-status">
                             <option value="">All Status</option>
@@ -328,7 +364,7 @@
                     <button class="btn btn-secondary" id="filter-btn">
                         <i class="fas fa-filter"></i> Apply Filters
                     </button>
-                </div>
+                </div> {% endcomment %}
 
                 <!-- Rooms Table -->
                 <div class="table-responsive">
@@ -375,7 +411,7 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="action-btn view-btn" title="View" data-id="{{ room.id }}"><i class="fas fa-eye"></i></button>
+                                            {% comment %} <button class="action-btn view-btn" title="View" data-id="{{ room.id }}"><i class="fas fa-eye"></i></button> {% endcomment %}
                                             <a href="{% url 'edit_room' room.id %}" class="action-btn edit-btn" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -391,7 +427,7 @@
                     </table>
                 </div>
 
-                <!-- Pagination -->
+                {% comment %} <!-- Pagination -->
                 <div class="pagination">
                     {% if rooms.has_previous %}
                         <a href="?page={{ rooms.previous_page_number }}" class="pagination-btn"><i class="fas fa-chevron-left"></i></a>
@@ -412,7 +448,7 @@
                     {% else %}
                         <button class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
                     {% endif %}
-                </div>
+                </div> {% endcomment %}
             </div>
         </main>
     </div>
@@ -453,5 +489,155 @@
             }
         }
         </script>
+
+
+        <style>
+    /* Form Container */
+    #popupForm {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 30px;
+        max-width: 700px;
+    }
+    
+    #popupForm h2 {
+        color: #5d5dff;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    /* Form Layout */
+    #popupForm form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-row-wide {
+        grid-column: span 2;
+    }
+    
+    /* Input Styling */
+    #popupForm label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+    }
+    
+    #popupForm input,
+    #popupForm select,
+    #popupForm textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        background: #f9f9f9;
+        transition: all 0.3s ease;
+    }
+    
+    #popupForm input:focus,
+    #popupForm select:focus,
+    #popupForm textarea:focus {
+        border-color: #5d5dff;
+        box-shadow: 0 0 0 3px rgba(93, 93, 255, 0.1);
+        background: #fff;
+        outline: none;
+    }
+    
+    /* Equipment & Features Selectors */
+    .equipment-selector,
+    .features-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .checkbox-label:hover {
+        border-color: #5d5dff;
+        background: #f5f7ff;
+    }
+    
+    .checkbox-custom {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        margin-right: 10px;
+        position: relative;
+    }
+    
+    input[type="checkbox"]:checked + .checkbox-custom {
+        background-color: #5d5dff;
+        border-color: #5d5dff;
+    }
+    
+    input[type="checkbox"]:checked + .checkbox-custom::after {
+        content: "✓";
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 12px;
+    }
+    
+    input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        grid-column: span 2;
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        #popupForm form {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-row-wide {
+            grid-column: span 1;
+        }
+        
+        .equipment-selector,
+        .features-selector {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
 </body>
 </html>
