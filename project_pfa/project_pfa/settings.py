@@ -77,10 +77,10 @@ WSGI_APPLICATION = "project_pfa.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_DATABASE', 'HubArtistique'),
+        'NAME': os.environ.get('MYSQL_DATABASE', 'railway'),
         'USER': os.environ.get('MYSQL_USER', 'root'),
-        'PASSWORD': os.environ.get('MYSQL_PASSWORD', ''),
-        'HOST': os.environ.get('MYSQL_HOST', 'localhost'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'PhBHUdDziFYzirWVcwiSqKzVLxAeQwEK'),
+        'HOST': os.environ.get('MYSQL_HOST', 'mysql-wcfv.railway.internal'),
         'PORT': os.environ.get('MYSQL_PORT', '3306'),
     }
 }
