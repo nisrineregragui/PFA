@@ -1006,7 +1006,7 @@ def edit_cart_item(request, item_index):
                 messages.success(request, f"{room.name} has been updated in your cart.")
                 return redirect('cart')
             
-            # # Get all equipment for the room
+            # Get all equipment for the room
             # all_equipment = room.additional_equipment.all()
             
             # Get selected equipment IDs
@@ -1022,7 +1022,7 @@ def edit_cart_item(request, item_index):
                 'item': item,
                 'item_index': item_index,
                 'room': room,
-                'all_equipment': all_equipment,
+                
                 'selected_equipment_ids': selected_equipment_ids,
                 'time_slots': time_slots,
                 'today': timezone.now().date()
