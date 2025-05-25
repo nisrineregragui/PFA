@@ -129,6 +129,7 @@ STATICFILES_DIRS = [
 
 # Dossier où les fichiers statiques seront collectés pour la production (non nécessaire pour le moment, mais peut être utile plus tard)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
