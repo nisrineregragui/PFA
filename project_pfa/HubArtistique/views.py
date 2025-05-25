@@ -13,6 +13,13 @@ from django.db.models import Q, Sum, Count
 import calendar
 import json
 from decimal import Decimal
+from django.contrib.auth.decorators import user_passes_test
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+import re
+
+def is_admin(user):
+    return user.is_authenticated and user.role == 'admin'
 
 def index(request):
     # Get search form
@@ -83,7 +90,8 @@ def index(request):
 
 def room_details(request):
     return render(request, 'CLIENT/room-details.html')
-
+@login_required
+@user_passes_test(is_admin)
 def dashboard(request):
     # Count total rooms
     total_rooms = Room.objects.count()
@@ -226,7 +234,8 @@ def dashboard(request):
     }
     
     return render(request, 'ADMIN/dashboard.html', context)
-
+@login_required
+@user_passes_test(is_admin)
 def rooms_admin(request):
     search_query = request.GET.get('search', '')
     
@@ -281,62 +290,121 @@ def rooms_admin(request):
     })
 
 def login_page(request):
-    """Render the login page"""
+    """Redirect authenticated users away from login page"""
     if request.user.is_authenticated:
-        return redirect('index')
+        if is_admin(request.user):
+            return redirect('dashboard') 
+        return redirect('index') 
     return render(request, 'login.html')
+
 
 def login_view(request):
     """Handle login form submission"""
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username_or_email = request.POST.get('username')
         password = request.POST.get('password')
         
-        # Try to authenticate with username
-        user = authenticate(request, username=username, password=password)
+        # Try authenticating with username
+        user = authenticate(request, username=username_or_email, password=password)
         
-        # If authentication failed, try using the email as username
+        # If failed, try using email as username
         if user is None:
             try:
-                user_obj = User.objects.get(email=username)
+                user_obj = User.objects.get(email=username_or_email)
                 user = authenticate(request, username=user_obj.username, password=password)
             except User.DoesNotExist:
                 user = None
-        
+
         if user is not None:
             auth_login(request, user)
-            return redirect('index')
+            if is_admin(user):
+                return redirect('dashboard')  # Admin dashboard
+            return redirect('index')  # Regular user homepage
         else:
             messages.error(request, "Invalid username or password", extra_tags='login')
-            
+    
     return render(request, 'login.html')
 
-def signup_view(request):
-    """Handle signup form submission"""
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        first_name = request.POST.get('first_name')
-        cin = request.POST.get('cin')
-        phone = request.POST.get('phone')
+def is_strong_password(password):
+    """Password must be at least 8 characters, contain a number, an uppercase letter, and a symbol."""
+    return (
+        len(password) >= 8 and
+        re.search(r"[A-Z]", password) and
+        re.search(r"\d", password) and
+        re.search(r"[!@#$%^&*(),.?\":{}|<>]", password)
+    )
 
-        if User.objects.filter(username=username).exists():
+def is_valid_email(email):
+    try:
+        validate_email(email)
+        return True
+    except ValidationError:
+        return False
+    
+def signup_view(request):
+    context = {}
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        first_name = request.POST.get('first_name', '').strip()
+        cin = request.POST.get('cin', '').strip()
+        phone = request.POST.get('phone', '').strip()
+
+        # Pass back submitted data except password
+        context = {
+            'username': username,
+            'email': email,
+            'first_name': first_name,
+            'cin': cin,
+            'phone': phone,
+        }
+
+        if not all([username, email, password, first_name, cin, phone]):
+            messages.error(request, "All fields are required.", extra_tags='signup')
+        elif not is_valid_email(email):
+            messages.error(request, "Invalid email format.", extra_tags='signup')
+        elif not is_strong_password(password):
+            messages.error(
+                request,
+                "Password must be at least 8 characters long and include an uppercase letter, number, and special character.",
+                extra_tags='signup'
+            )
+        elif not re.fullmatch(r'[A-Za-z0-9]{6,10}', cin):
+            messages.error(request, "Invalid CIN format.", extra_tags='signup')
+        elif not re.fullmatch(r'0[5-7]\d{8}', phone):
+            messages.error(request, "Invalid phone number format.", extra_tags='signup')
+        elif User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.", extra_tags='signup')
         elif User.objects.filter(email=email).exists():
             messages.error(request, "Email already in use.", extra_tags='signup')
         else:
-            user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, cin=cin, phone=phone)
+            messages.success(request,"Account Created Successfully.",extra_tags='signup')
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                cin=cin,
+                phone=phone
+            )
             user.save()
             auth_login(request, user)
             return redirect('login')
-            
-    return render(request, 'login.html')
+
+    return render(request, 'login.html', context)
+
+
+
+
 
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+@login_required
+@user_passes_test(is_admin)
 def users(request):
     search_query = request.GET.get('search', '')
     
@@ -387,7 +455,8 @@ def users(request):
     }
     
     return render(request, 'ADMIN/users.html', context)
-
+@login_required
+@user_passes_test(is_admin)
 def add_room(request):
     if request.method == 'POST':
         form = RoomForm(request.POST, request.FILES)
@@ -1161,7 +1230,8 @@ def change_month(request, room_id):
         'calendar_data': calendar_data,
         'room_id': room_id
     })
-
+@login_required
+@user_passes_test(is_admin)
 def bookings(request):
     # Get all rooms for filter dropdown
     rooms = Room.objects.all()
@@ -1202,7 +1272,7 @@ def bookings(request):
             pass
     
     # Pagination
-    paginator = Paginator(reservations, 10)  # Show 10 reservations per page
+    paginator = Paginator(reservations, 10)  
     page_number = request.GET.get('page', 1)
     reservations_page = paginator.get_page(page_number)
     
@@ -1215,7 +1285,8 @@ def bookings(request):
         'start_date': start_date,
         'end_date': end_date
     })
-
+@login_required
+@user_passes_test(is_admin)
 def validate_booking(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     
@@ -1247,7 +1318,8 @@ def validate_booking(request, reservation_id):
         'form': form
     }
     return render(request, 'ADMIN/validate_booking.html', context)
-
+@login_required
+@user_passes_test(is_admin)
 def edit_booking(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     room = reservation.room
@@ -1309,13 +1381,16 @@ def edit_booking(request, reservation_id):
         'room': room,
     }
     return render(request, 'ADMIN/edit_booking.html', context)
-
+@login_required
+@user_passes_test(is_admin)
 def delete_booking(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
     reservation.delete()
     messages.success(request, f"Booking #{reservation_id} was successfully deleted.")
     return redirect('bookings')
 
+@login_required
+@user_passes_test(is_admin)
 def edit_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     
@@ -1334,7 +1409,8 @@ def edit_user(request, user_id):
     }
     return render(request, 'ADMIN/edit_user.html', context)
 
-
+@login_required
+@user_passes_test(is_admin)
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     if request.method == 'POST':
@@ -1346,7 +1422,8 @@ def delete_user(request, user_id):
 
 
 
-
+@login_required
+@user_passes_test(is_admin)
 def edit_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     
@@ -1365,7 +1442,8 @@ def edit_room(request, room_id):
     }
     return render(request, 'ADMIN/edit_room.html', context)
 
-
+@login_required
+@user_passes_test(is_admin)
 def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     
